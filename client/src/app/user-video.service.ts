@@ -16,26 +16,15 @@ export class UserVideoService {
 
   public async updateFeed() {
     const { deviceId } = this.sources[this.currentSource];
-    this.replayVideo.next(
-      await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId,
-        },
-        audio: {
-          echoCancellation: true,
-        },
-      })
-    );
-  }
-
-  public async getUserCam() {
-    const { deviceId } = this.sources[this.currentSource];
-    return await navigator.mediaDevices.getUserMedia({
+    const stream = await navigator.mediaDevices.getUserMedia({
       video: {
         deviceId,
       },
-      audio: true,
+      audio: {
+        echoCancellation: true,
+      },
     });
+    this.replayVideo.next(stream);
   }
 
   public getUserScreen() {

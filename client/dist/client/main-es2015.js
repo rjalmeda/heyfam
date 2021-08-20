@@ -71,9 +71,8 @@ class AppComponent {
             this.connections = d;
         });
         this.userVideoService.currentFeed.subscribe((cam) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const stream = yield this.userVideoService.getUserCam();
             this.sources = this.userVideoService.sources;
-            this.playStream(this.userWindow, stream);
+            this.playStream(this.userWindow, cam);
         }));
     }
     get EnableVideoToggle() {
@@ -233,25 +232,15 @@ class UserVideoService {
     updateFeed() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const { deviceId } = this.sources[this.currentSource];
-            this.replayVideo.next(yield navigator.mediaDevices.getUserMedia({
+            const stream = yield navigator.mediaDevices.getUserMedia({
                 video: {
                     deviceId,
                 },
                 audio: {
                     echoCancellation: true,
                 },
-            }));
-        });
-    }
-    getUserCam() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const { deviceId } = this.sources[this.currentSource];
-            return yield navigator.mediaDevices.getUserMedia({
-                video: {
-                    deviceId,
-                },
-                audio: true,
             });
+            this.replayVideo.next(stream);
         });
     }
     getUserScreen() {

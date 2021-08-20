@@ -34,9 +34,8 @@ export class AppComponent {
       this.connections = d;
     });
     this.userVideoService.currentFeed.subscribe(async (cam) => {
-      const stream = await this.userVideoService.getUserCam();
       this.sources = this.userVideoService.sources;
-      this.playStream(this.userWindow, stream);
+      this.playStream(this.userWindow, cam);
     });
   }
 
