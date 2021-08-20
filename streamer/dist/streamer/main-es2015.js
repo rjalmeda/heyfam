@@ -302,15 +302,15 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
-                // const streams = await navigator.mediaDevices.getUserMedia({
-                //   video: true,
-                //   audio: {
-                //     echoCancellation: true,
-                //   },
-                // });
-                // streams.getTracks().forEach((track) => {
-                //   connection.peerConnection.addTrack(track, streams);
-                // });
+                const streams = yield navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: {
+                        echoCancellation: true,
+                    },
+                });
+                streams.getTracks().forEach((track) => {
+                    connection.peerConnection.addTrack(track, streams);
+                });
                 connection.peerConnection.onconnectionstatechange = (event) => { };
                 connection.peerConnection.onicecandidate = (event) => {
                     if (event.candidate) {
@@ -319,6 +319,7 @@ class SocketServiceService {
                 };
                 connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
                 connection.peerConnection.ontrack = (event) => {
+                    console.log(event.track);
                     connection.stream.addTrack(event.track);
                 };
                 const answer = yield connection.peerConnection.createAnswer();
@@ -349,20 +350,24 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
-                // const streams = await navigator.mediaDevices.getUserMedia({
-                //   video: true,
-                //   audio: {
-                //     echoCancellation: true,
-                //   },
-                // });
-                // streams.getTracks().forEach((track) => {
-                //   d.peerConnection.addTrack(track, streams);
-                // });
+                const streams = yield navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: {
+                        echoCancellation: true,
+                    },
+                });
+                streams.getTracks().forEach((track) => {
+                    d.peerConnection.addTrack(track, streams);
+                });
                 d.peerConnection.onconnectionstatechange = (event) => { };
                 d.peerConnection.onicecandidate = (event) => {
                     if (event.candidate) {
                         this.socket.emit("iceCandidate", d.sessionId, this.socket.id, event.candidate);
                     }
+                };
+                d.peerConnection.ontrack = (event) => {
+                    console.log(event);
+                    d.stream.addTrack(event.track);
                 };
                 const offer = yield d.peerConnection.createOffer();
                 yield d.peerConnection.setLocalDescription(offer);

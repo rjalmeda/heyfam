@@ -39,15 +39,15 @@ export class SocketServiceService {
         connection.peerConnection =
           this.userVideoService.createPeerConnection();
 
-        // const streams = await navigator.mediaDevices.getUserMedia({
-        //   video: true,
-        //   audio: {
-        //     echoCancellation: true,
-        //   },
-        // });
-        // streams.getTracks().forEach((track) => {
-        //   connection.peerConnection.addTrack(track, streams);
-        // });
+        const streams = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: {
+            echoCancellation: true,
+          },
+        });
+        streams.getTracks().forEach((track) => {
+          connection.peerConnection.addTrack(track, streams);
+        });
         connection.peerConnection.onconnectionstatechange = (event) => {};
         connection.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {
@@ -63,6 +63,7 @@ export class SocketServiceService {
           new RTCSessionDescription(offer)
         );
         connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+          console.log(event.track);
           connection.stream.addTrack(event.track);
         };
         const answer = await connection.peerConnection.createAnswer();
@@ -100,15 +101,15 @@ export class SocketServiceService {
       data = data.filter((session) => session.sessionId !== this.socket.id);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
-        // const streams = await navigator.mediaDevices.getUserMedia({
-        //   video: true,
-        //   audio: {
-        //     echoCancellation: true,
-        //   },
-        // });
-        // streams.getTracks().forEach((track) => {
-        //   d.peerConnection.addTrack(track, streams);
-        // });
+        const streams = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: {
+            echoCancellation: true,
+          },
+        });
+        streams.getTracks().forEach((track) => {
+          d.peerConnection.addTrack(track, streams);
+        });
         d.peerConnection.onconnectionstatechange = (event) => {};
         d.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {
@@ -119,6 +120,10 @@ export class SocketServiceService {
               event.candidate
             );
           }
+        };
+        d.peerConnection.ontrack = (event: RTCTrackEvent) => {
+          console.log(event);
+          d.stream.addTrack(event.track);
         };
         const offer = await d.peerConnection.createOffer();
         await d.peerConnection.setLocalDescription(offer);
