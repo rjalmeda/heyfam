@@ -17,7 +17,6 @@ app.use(express.static("./streamer/dist/streamer"));
 // });
 
 io.on('connection', socket => {
-    console.log('A user has connected');
     const connection = {
         sessionId: socket.id,
         name: ''
@@ -53,17 +52,14 @@ io.on('connection', socket => {
     })
 
     socket.on('offer', (to, from, offer) => {
-        console.log('offer received');
         socket.broadcast.to(to).emit('offer', from, offer);
     })
 
     socket.on('answer', (to, from, answer) => {
-        console.log('answer received');
         socket.broadcast.to(to).emit('answer', from, answer);
     })
 
     socket.on('iceCandidate', (to, from, iceCandidate) => {
-        console.log('ice candidate received');
         socket.broadcast.to(to).emit('iceCandidate', from, iceCandidate);
     })
 

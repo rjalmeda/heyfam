@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "pushd client && ng build && popd && pushd streamer && ng build && popd && node server.js",
+    "ng": "ng",
+    "start": "npm run build --prefix ./client && npm run build --prefix ./streamer && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
