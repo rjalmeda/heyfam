@@ -229,9 +229,9 @@ class UserVideoService {
     getUserScreen() {
         const displayMediaOptions = {
             video: {
-                cursor: "always"
+                cursor: "always",
             },
-            audio: false
+            audio: false,
         };
         const md = navigator.mediaDevices;
         return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(md.getDisplayMedia(displayMediaOptions));
@@ -240,19 +240,19 @@ class UserVideoService {
         const configuration = {
             configuration: {
                 offerToReceiveAudio: true,
-                offerToReceiveVideo: true
+                offerToReceiveVideo: true,
             },
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+            iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
         };
         return new RTCPeerConnection(configuration);
     }
 }
 UserVideoService.ɵfac = function UserVideoService_Factory(t) { return new (t || UserVideoService)(); };
-UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: 'root' });
+UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
-                providedIn: 'root'
+                providedIn: "root",
             }]
     }], function () { return []; }, null); })();
 

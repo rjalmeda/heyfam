@@ -423,7 +423,7 @@
                 offerToReceiveVideo: true
               },
               iceServers: [{
-                urls: 'stun:stun.l.google.com:19302'
+                urls: "stun:stun.l.google.com:19302"
               }]
             };
             return new RTCPeerConnection(configuration);
@@ -440,7 +440,7 @@
       UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
         token: UserVideoService,
         factory: UserVideoService.ɵfac,
-        providedIn: 'root'
+        providedIn: "root"
       });
       /*@__PURE__*/
 
@@ -448,7 +448,7 @@
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
           type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
           args: [{
-            providedIn: 'root'
+            providedIn: "root"
           }]
         }], function () {
           return [];

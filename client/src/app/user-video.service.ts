@@ -28,6 +28,16 @@ export class UserVideoService {
     );
   }
 
+  public async getUserCam() {
+    const { deviceId } = this.sources[this.currentSource];
+    return await navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId,
+      },
+      audio: true,
+    });
+  }
+
   public getUserScreen() {
     const displayMediaOptions = {
       video: {
@@ -61,7 +71,7 @@ export class UserVideoService {
   }
 
   private async enumerateVideoDevices() {
-    await navigator.mediaDevices.getUserMedia({ video: true });
+    navigator.mediaDevices.getUserMedia({ video: true });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter((device) =>
       device.kind.toLowerCase().includes("videoinput")
