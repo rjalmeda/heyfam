@@ -117,6 +117,7 @@
             _this.connections = d;
           });
           this.userVideoService.currentFeed.subscribe(function (cam) {
+            _this.sources = _this.userVideoService.sources;
             _this.userCam = cam;
 
             _this.playStream(_this.userWindow, cam);
@@ -165,6 +166,7 @@
           key: "nextSource",
           value: function nextSource() {
             if (this.EnableVideoToggle) {
+              console.log("toggling devices");
               this.userVideoService.nextSource();
             }
           }
@@ -419,9 +421,11 @@
                 while (1) {
                   switch (_context.prev = _context.next) {
                     case 0:
+                      console.log("updating feed");
                       deviceId = this.sources[this.currentSource].deviceId;
+                      console.log(deviceId);
                       _context.t0 = this.replayVideo;
-                      _context.next = 4;
+                      _context.next = 6;
                       return navigator.mediaDevices.getUserMedia({
                         video: {
                           deviceId: deviceId
@@ -431,12 +435,12 @@
                         }
                       });
 
-                    case 4:
+                    case 6:
                       _context.t1 = _context.sent;
 
                       _context.t0.next.call(_context.t0, _context.t1);
 
-                    case 6:
+                    case 8:
                     case "end":
                       return _context.stop();
                   }

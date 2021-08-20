@@ -37,6 +37,7 @@ export class AppComponent {
       this.connections = d;
     });
     this.userVideoService.currentFeed.subscribe((cam) => {
+      this.sources = this.userVideoService.sources;
       this.userCam = cam;
       this.playStream(this.userWindow, cam);
     });
@@ -78,6 +79,7 @@ export class AppComponent {
 
   public nextSource(): void {
     if (this.EnableVideoToggle) {
+      console.log("toggling devices");
       this.userVideoService.nextSource();
     }
   }

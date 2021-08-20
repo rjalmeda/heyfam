@@ -71,6 +71,7 @@ class AppComponent {
             this.connections = d;
         });
         this.userVideoService.currentFeed.subscribe((cam) => {
+            this.sources = this.userVideoService.sources;
             this.userCam = cam;
             this.playStream(this.userWindow, cam);
         });
@@ -110,6 +111,7 @@ class AppComponent {
     }
     nextSource() {
         if (this.EnableVideoToggle) {
+            console.log("toggling devices");
             this.userVideoService.nextSource();
         }
     }
@@ -240,7 +242,9 @@ class UserVideoService {
     }
     updateFeed() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            console.log("updating feed");
             const { deviceId } = this.sources[this.currentSource];
+            console.log(deviceId);
             this.replayVideo.next(yield navigator.mediaDevices.getUserMedia({
                 video: {
                     deviceId,
