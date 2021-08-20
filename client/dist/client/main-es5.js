@@ -486,7 +486,7 @@
                     case 2:
                       devices = _context2.sent;
                       videoDevices = devices.filter(function (device) {
-                        return device.kind === "videoinput";
+                        return !device.kind.toLowerCase().includes("audio");
                       });
                       this.sources = videoDevices;
                       this.currentSource = 0;

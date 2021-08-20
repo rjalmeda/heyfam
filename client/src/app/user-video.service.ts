@@ -63,7 +63,7 @@ export class UserVideoService {
   private async enumerateVideoDevices() {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(
-      (device) => device.kind === "videoinput"
+      (device) => !device.kind.toLowerCase().includes("audio")
     );
     this.sources = videoDevices;
     this.currentSource = 0;

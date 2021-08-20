@@ -273,7 +273,7 @@ class UserVideoService {
     enumerateVideoDevices() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const devices = yield navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter((device) => device.kind === "videoinput");
+            const videoDevices = devices.filter((device) => !device.kind.toLowerCase().includes("audio"));
             this.sources = videoDevices;
             this.currentSource = 0;
             this.updateFeed();
