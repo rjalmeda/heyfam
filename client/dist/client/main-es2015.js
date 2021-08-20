@@ -53,12 +53,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var _socket_service_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./socket-service.service */ "nzwC");
 /* harmony import */ var _user_video_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./user-video.service */ "ghKE");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common */ "ofXK");
+
 
 
 
 
 const _c0 = ["userWindow"];
+function AppComponent_div_3_Template(rf, ctx) { if (rf & 1) {
+    const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_div_3_Template_div_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r3); const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r2.nextSource(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
 class AppComponent {
+    // @ViewChildren("videoStreams")
+    // private videoStreamsWindows: ElementRef[];
     constructor(socketService, userVideoService) {
         this.socketService = socketService;
         this.userVideoService = userVideoService;
@@ -68,24 +78,34 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.currentFeed.subscribe((f) => {
-            this.sources = this.userVideoService.sources;
-            this.playStream(this.userWindow, f);
+        this.userVideoService.currentFeed.subscribe((cam) => {
+            this.userCam = cam;
+            this.playStream(this.userWindow, cam);
         });
     }
     get EnableVideoToggle() {
         return this.sources.length > 1;
     }
-    getVideoWindow(id) { }
-    // public enableScreenCapture() {
-    //   this.screenCapEnabled = true;
-    //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
-    //     screen.getVideoTracks()[0].addEventListener("ended", () => {
-    //       this.enableUserCam();
-    //     });
-    //     this.playStream(this.userWindow, screen);
+    // public ngAfterViewChecked(): void {
+    //   this.videoStreamsWindows.forEach((s) => {
+    //     if (!s.nativeElement.srcObject) {
+    //       const c = this.connections.find(
+    //         (connection) => connection.sessionId === s.nativeElement.id
+    //       );
+    //       s.nativeElement.srcObject = c.stream;
+    //     }
     //   });
     // }
+    getVideoWindow(id) { }
+    enableScreenCapture() {
+        this.screenCapEnabled = true;
+        this.userVideoService.getUserScreen().subscribe((screen) => {
+            screen.getVideoTracks()[0].addEventListener("ended", () => {
+                this.enableUserCam();
+            });
+            this.playStream(this.userWindow, screen);
+        });
+    }
     enableUserCam() {
         this.screenCapEnabled = false;
         this.playStream(this.userWindow, this.userCam);
@@ -97,10 +117,7 @@ class AppComponent {
         }
     }
     nextSource() {
-        if (this.EnableVideoToggle) {
-            console.log("toggling devices");
-            this.userVideoService.nextSource();
-        }
+        this.userVideoService.nextSource();
     }
     playStream(elRef, stream) {
         const videoWindow = elRef.nativeElement;
@@ -116,12 +133,15 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
     } if (rf & 2) {
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
-    } }, decls: 3, vars: 0, consts: [[1, "video-container", 3, "click"], ["autoplay", ""], ["userWindow", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 4, vars: 1, consts: [[1, "video-container"], [2, "border", "1px solid red"], ["userWindow", ""], ["class", "controller-button", 3, "click", 4, "ngIf"], [1, "controller-button", 3, "click"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_Template_div_click_0_listener() { return ctx.nextSource(); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, AppComponent_div_3_Template, 1, 0, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    } }, styles: [".video-container[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  width: 98%;\n  height: 98%;\n  overflow: hidden;\n  z-index: 0;\n}\n\n.video-container[_ngcontent-%COMP%]   video[_ngcontent-%COMP%] {\n  \n  min-width: 100%;\n  min-height: 100%;\n  \n  width: auto;\n  height: auto;\n  \n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL2FwcC5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJLGtCQUFBO0VBQ0EsTUFBQTtFQUNBLFNBQUE7RUFDQSxVQUFBO0VBQ0EsV0FBQTtFQUNBLGdCQUFBO0VBQ0EsVUFBQTtBQUNKOztBQUNFO0VBQ0UsOENBQUE7RUFDQSxlQUFBO0VBQ0EsZ0JBQUE7RUFFQSwrRkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBRUEscUJBQUE7RUFDQSxrQkFBQTtFQUNBLFFBQUE7RUFDQSxTQUFBO0VBQ0EsZ0NBQUE7QUFBSiIsImZpbGUiOiJhcHAuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIudmlkZW8tY29udGFpbmVyIHtcbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgdG9wOiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICB3aWR0aDogOTglO1xuICAgIGhlaWdodDogOTglOyBcbiAgICBvdmVyZmxvdzogaGlkZGVuO1xuICAgIHotaW5kZXg6IDA7XG4gIH1cbiAgLnZpZGVvLWNvbnRhaW5lciB2aWRlbyB7XG4gICAgLyogTWFrZSB2aWRlbyB0byBhdCBsZWFzdCAxMDAlIHdpZGUgYW5kIHRhbGwgKi9cbiAgICBtaW4td2lkdGg6IDEwMCU7IFxuICAgIG1pbi1oZWlnaHQ6IDEwMCU7IFxuICBcbiAgICAvKiBTZXR0aW5nIHdpZHRoICYgaGVpZ2h0IHRvIGF1dG8gcHJldmVudHMgdGhlIGJyb3dzZXIgZnJvbSBzdHJldGNoaW5nIG9yIHNxdWlzaGluZyB0aGUgdmlkZW8gKi9cbiAgICB3aWR0aDogYXV0bztcbiAgICBoZWlnaHQ6IGF1dG87XG4gIFxuICAgIC8qIENlbnRlciB0aGUgdmlkZW8gKi9cbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgdG9wOiA1MCU7XG4gICAgbGVmdDogNTAlO1xuICAgIHRyYW5zZm9ybTogdHJhbnNsYXRlKC01MCUsLTUwJSk7XG4gIH0iXX0= */"] });
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.EnableVideoToggle);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"]], styles: [".video-container[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  width: 98%;\n  height: 98%;\n  overflow: hidden;\n  z-index: 0;\n}\n.video-container[_ngcontent-%COMP%]   .controller-button[_ngcontent-%COMP%] {\n  z-index: 1;\n  position: absolute;\n  top: 3em;\n  right: 3em;\n  width: 3em;\n  height: 3em;\n  border: 1px solid green;\n}\n.video-container[_ngcontent-%COMP%]   video[_ngcontent-%COMP%] {\n  \n  min-width: 100%;\n  min-height: 100%;\n  \n  width: auto;\n  height: auto;\n  \n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL2FwcC5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJLGtCQUFBO0VBQ0EsTUFBQTtFQUNBLFNBQUE7RUFDQSxVQUFBO0VBQ0EsV0FBQTtFQUNBLGdCQUFBO0VBQ0EsVUFBQTtBQUNKO0FBQ0k7RUFDSSxVQUFBO0VBQ0Esa0JBQUE7RUFDQSxRQUFBO0VBQ0EsVUFBQTtFQUNBLFVBQUE7RUFDQSxXQUFBO0VBQ0EsdUJBQUE7QUFDUjtBQUVFO0VBQ0UsOENBQUE7RUFDQSxlQUFBO0VBQ0EsZ0JBQUE7RUFFQSwrRkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBRUEscUJBQUE7RUFDQSxrQkFBQTtFQUNBLFFBQUE7RUFDQSxTQUFBO0VBQ0EsZ0NBQUE7QUFESiIsImZpbGUiOiJhcHAuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIudmlkZW8tY29udGFpbmVyIHtcbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgdG9wOiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICB3aWR0aDogOTglO1xuICAgIGhlaWdodDogOTglOyBcbiAgICBvdmVyZmxvdzogaGlkZGVuO1xuICAgIHotaW5kZXg6IDA7XG5cbiAgICAuY29udHJvbGxlci1idXR0b24ge1xuICAgICAgICB6LWluZGV4OiAxO1xuICAgICAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgICAgIHRvcDogM2VtO1xuICAgICAgICByaWdodDogM2VtO1xuICAgICAgICB3aWR0aDogM2VtO1xuICAgICAgICBoZWlnaHQ6IDNlbTtcbiAgICAgICAgYm9yZGVyOiAxcHggc29saWQgZ3JlZW47XG4gICAgfVxuICB9XG4gIC52aWRlby1jb250YWluZXIgdmlkZW8ge1xuICAgIC8qIE1ha2UgdmlkZW8gdG8gYXQgbGVhc3QgMTAwJSB3aWRlIGFuZCB0YWxsICovXG4gICAgbWluLXdpZHRoOiAxMDAlOyBcbiAgICBtaW4taGVpZ2h0OiAxMDAlOyBcbiAgXG4gICAgLyogU2V0dGluZyB3aWR0aCAmIGhlaWdodCB0byBhdXRvIHByZXZlbnRzIHRoZSBicm93c2VyIGZyb20gc3RyZXRjaGluZyBvciBzcXVpc2hpbmcgdGhlIHZpZGVvICovXG4gICAgd2lkdGg6IGF1dG87XG4gICAgaGVpZ2h0OiBhdXRvO1xuICBcbiAgICAvKiBDZW50ZXIgdGhlIHZpZGVvICovXG4gICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgIHRvcDogNTAlO1xuICAgIGxlZnQ6IDUwJTtcbiAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZSgtNTAlLC01MCUpO1xuICB9Il19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AppComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -230,29 +250,26 @@ class UserVideoService {
     updateFeed() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const { deviceId } = this.sources[this.currentSource];
-            const media = yield navigator.mediaDevices.getUserMedia({
+            this.replayVideo.next(yield navigator.mediaDevices.getUserMedia({
                 video: {
                     deviceId,
                 },
                 audio: {
                     echoCancellation: true,
                 },
-            });
-            this.media = media.clone();
-            this.replayVideo.next(media);
+            }));
         });
     }
-    getStream() { }
-    // public getUserScreen() {
-    //   const displayMediaOptions = {
-    //     video: {
-    //       cursor: "always",
-    //     },
-    //     audio: false,
-    //   };
-    //   const md: any = navigator.mediaDevices;
-    //   return from(md.getDisplayMedia(displayMediaOptions));
-    // }
+    getUserScreen() {
+        const displayMediaOptions = {
+            video: {
+                cursor: "always",
+            },
+            audio: false,
+        };
+        const md = navigator.mediaDevices;
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
+    }
     createPeerConnection() {
         const configuration = {
             configuration: {
@@ -274,12 +291,8 @@ class UserVideoService {
     }
     enumerateVideoDevices() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            yield navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true,
-            });
             const devices = yield navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter((device) => !device.kind.toLowerCase().includes("audio"));
+            const videoDevices = devices.filter((device) => device.kind === "videoinput");
             this.sources = videoDevices;
             this.currentSource = 0;
             this.updateFeed();
@@ -341,8 +354,14 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
-                this.userVideoService.media.getTracks().forEach((track) => {
-                    connection.peerConnection.addTrack(track, this.userVideoService.media);
+                const streams = yield navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: {
+                        echoCancellation: true,
+                    },
+                });
+                streams.getTracks().forEach((track) => {
+                    connection.peerConnection.addTrack(track, streams);
                 });
                 this.userVideoService.currentFeed.subscribe((f) => {
                     const tracks = f.getTracks();
@@ -390,16 +409,14 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
-                this.userVideoService.media.getTracks().forEach((track) => {
-                    d.peerConnection.addTrack(track, this.userVideoService.media);
+                const streams = yield navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: {
+                        echoCancellation: true,
+                    },
                 });
-                this.userVideoService.currentFeed.subscribe((f) => {
-                    const tracks = f.getTracks();
-                    const senders = d.peerConnection.getSenders();
-                    senders.forEach((s) => {
-                        const track = tracks.find((t) => t.kind === s.track.kind);
-                        s.replaceTrack(track);
-                    });
+                streams.getTracks().forEach((track) => {
+                    d.peerConnection.addTrack(track, streams);
                 });
                 d.peerConnection.onconnectionstatechange = (event) => { };
                 d.peerConnection.onicecandidate = (event) => {
@@ -412,6 +429,9 @@ class SocketServiceService {
                 this.socket.emit("offer", d.sessionId, this.socket.id, offer);
             }));
             this.allUsers = data;
+            // this.allUsers.forEach((u) => {
+            //   u.stream = new MediaStream();
+            // });
             this.connectionsSubject.next(data);
         });
         this.socket.on("userDisconnected", (sessionId) => {
@@ -422,6 +442,7 @@ class SocketServiceService {
             this.connectionsSubject.next(this.allUsers);
         });
         this.socket.on("newStreamerConnected", (connection) => {
+            // connection.stream = new MediaStream();
             this.allUsers.push(connection);
             this.connectionsSubject.next(this.allUsers);
         });

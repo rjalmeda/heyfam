@@ -63,7 +63,6 @@ export class SocketServiceService {
           new RTCSessionDescription(offer)
         );
         connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-          console.log(event.track);
           connection.stream.addTrack(event.track);
         };
         const answer = await connection.peerConnection.createAnswer();
@@ -120,10 +119,6 @@ export class SocketServiceService {
               event.candidate
             );
           }
-        };
-        d.peerConnection.ontrack = (event: RTCTrackEvent) => {
-          console.log(event);
-          d.stream.addTrack(event.track);
         };
         const offer = await d.peerConnection.createOffer();
         await d.peerConnection.setLocalDescription(offer);

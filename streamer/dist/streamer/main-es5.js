@@ -136,7 +136,10 @@
           this.screenCapEnabled = false;
           this.socketService.connections.subscribe(function (d) {
             _this.connections = d;
-          });
+          }); // this.userVideoService.getUserCam().subscribe((cam) => {
+          //   this.userCam = cam;
+          //   this.playStream(this.userWindow, cam);
+          // });
         }
 
         _createClass(AppComponent, [{
@@ -209,7 +212,7 @@
         },
         decls: 1,
         vars: 1,
-        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 3, "id"], ["videoStreams", ""]],
+        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
@@ -423,7 +426,7 @@
                 offerToReceiveVideo: true
               },
               iceServers: [{
-                urls: "stun:stun.l.google.com:19302"
+                urls: 'stun:stun.l.google.com:19302'
               }]
             };
             return new RTCPeerConnection(configuration);
@@ -440,7 +443,7 @@
       UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
         token: UserVideoService,
         factory: UserVideoService.ɵfac,
-        providedIn: "root"
+        providedIn: 'root'
       });
       /*@__PURE__*/
 
@@ -448,7 +451,7 @@
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
           type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
           args: [{
-            providedIn: "root"
+            providedIn: 'root'
           }]
         }], function () {
           return [];
@@ -580,7 +583,6 @@
                         connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
 
                         connection.peerConnection.ontrack = function (event) {
-                          console.log(event.track);
                           connection.stream.addTrack(event.track);
                         };
 
@@ -702,23 +704,18 @@
                             }
                           };
 
-                          d.peerConnection.ontrack = function (event) {
-                            console.log(event);
-                            d.stream.addTrack(event.track);
-                          };
-
-                          _context4.next = 10;
+                          _context4.next = 9;
                           return d.peerConnection.createOffer();
 
-                        case 10:
+                        case 9:
                           offer = _context4.sent;
-                          _context4.next = 13;
+                          _context4.next = 12;
                           return d.peerConnection.setLocalDescription(offer);
 
-                        case 13:
+                        case 12:
                           this.socket.emit("offer", d.sessionId, this.socket.id, offer);
 
-                        case 14:
+                        case 13:
                         case "end":
                           return _context4.stop();
                       }

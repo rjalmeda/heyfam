@@ -1,11 +1,5 @@
 import { Injectable } from "@angular/core";
-import {
-  BehaviorSubject,
-  from,
-  Observable,
-  ReplaySubject,
-  Subject,
-} from "rxjs";
+import { from, Observable, ReplaySubject } from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -13,9 +7,8 @@ import {
 export class UserVideoService {
   public sources: MediaDeviceInfo[] = [];
   public currentSource: number = 0;
-  public replayVideo = new ReplaySubject<any>();
+  public replayVideo = new ReplaySubject<MediaStream>();
   public currentFeed = this.replayVideo.asObservable();
-  public media: MediaStream;
 
   constructor() {
     this.enumerateVideoDevices();
@@ -23,31 +16,29 @@ export class UserVideoService {
 
   public async updateFeed() {
     const { deviceId } = this.sources[this.currentSource];
-    const media = await navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId,
-      },
-      audio: {
-        echoCancellation: true,
-      },
-    });
-    this.media = media.clone();
-    this.replayVideo.next(media);
+    this.replayVideo.next(
+      await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId,
+        },
+        audio: {
+          echoCancellation: true,
+        },
+      })
+    );
   }
 
-  public getStream() {}
+  public getUserScreen() {
+    const displayMediaOptions = {
+      video: {
+        cursor: "always",
+      },
+      audio: false,
+    };
 
-  // public getUserScreen() {
-  //   const displayMediaOptions = {
-  //     video: {
-  //       cursor: "always",
-  //     },
-  //     audio: false,
-  //   };
-
-  //   const md: any = navigator.mediaDevices;
-  //   return from(md.getDisplayMedia(displayMediaOptions));
-  // }
+    const md: any = navigator.mediaDevices;
+    return from(md.getDisplayMedia(displayMediaOptions));
+  }
 
   public createPeerConnection() {
     const configuration = {
@@ -70,13 +61,9 @@ export class UserVideoService {
   }
 
   private async enumerateVideoDevices() {
-    await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: true,
-    });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(
-      (device) => !device.kind.toLowerCase().includes("audio")
+      (device) => device.kind === "videoinput"
     );
     this.sources = videoDevices;
     this.currentSource = 0;

@@ -6,6 +6,16 @@
     height: 98%; 
     overflow: hidden;
     z-index: 0;
+
+    .controller-button {
+        z-index: 1;
+        position: absolute;
+        top: 3em;
+        right: 3em;
+        width: 3em;
+        height: 3em;
+        border: 1px solid green;
+    }
   }
   .video-container video {
     /* Make video to at least 100% wide and tall */

@@ -78,6 +78,10 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
+        // this.userVideoService.getUserCam().subscribe((cam) => {
+        //   this.userCam = cam;
+        //   this.playStream(this.userWindow, cam);
+        // });
     }
     ngAfterViewChecked() {
         this.videoStreamsWindows.forEach((s) => {
@@ -121,7 +125,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
     } if (rf & 2) {
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.videoStreamsWindows = _t);
-    } }, decls: 1, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 1, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.connections);
@@ -229,9 +233,9 @@ class UserVideoService {
     getUserScreen() {
         const displayMediaOptions = {
             video: {
-                cursor: "always",
+                cursor: "always"
             },
-            audio: false,
+            audio: false
         };
         const md = navigator.mediaDevices;
         return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(md.getDisplayMedia(displayMediaOptions));
@@ -240,19 +244,19 @@ class UserVideoService {
         const configuration = {
             configuration: {
                 offerToReceiveAudio: true,
-                offerToReceiveVideo: true,
+                offerToReceiveVideo: true
             },
-            iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
         };
         return new RTCPeerConnection(configuration);
     }
 }
 UserVideoService.ɵfac = function UserVideoService_Factory(t) { return new (t || UserVideoService)(); };
-UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
+UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
-                providedIn: "root",
+                providedIn: 'root'
             }]
     }], function () { return []; }, null); })();
 
@@ -319,7 +323,6 @@ class SocketServiceService {
                 };
                 connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
                 connection.peerConnection.ontrack = (event) => {
-                    console.log(event.track);
                     connection.stream.addTrack(event.track);
                 };
                 const answer = yield connection.peerConnection.createAnswer();
@@ -364,10 +367,6 @@ class SocketServiceService {
                     if (event.candidate) {
                         this.socket.emit("iceCandidate", d.sessionId, this.socket.id, event.candidate);
                     }
-                };
-                d.peerConnection.ontrack = (event) => {
-                    console.log(event);
-                    d.stream.addTrack(event.track);
                 };
                 const offer = yield d.peerConnection.createOffer();
                 yield d.peerConnection.setLocalDescription(offer);

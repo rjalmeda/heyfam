@@ -26,6 +26,9 @@ export class AppComponent {
   @ViewChild("userWindow", { static: false, read: ElementRef })
   private userWindow: ElementRef;
 
+  // @ViewChildren("videoStreams")
+  // private videoStreamsWindows: ElementRef[];
+
   constructor(
     private socketService: SocketServiceService,
     private userVideoService: UserVideoService
@@ -33,23 +36,34 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.currentFeed.subscribe((f) => {
-      this.sources = this.userVideoService.sources;
-      this.playStream(this.userWindow, f);
+    this.userVideoService.currentFeed.subscribe((cam) => {
+      this.userCam = cam;
+      this.playStream(this.userWindow, cam);
     });
   }
 
-  getVideoWindow(id: string) {}
-
-  // public enableScreenCapture() {
-  //   this.screenCapEnabled = true;
-  //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
-  //     screen.getVideoTracks()[0].addEventListener("ended", () => {
-  //       this.enableUserCam();
-  //     });
-  //     this.playStream(this.userWindow, screen);
+  // public ngAfterViewChecked(): void {
+  //   this.videoStreamsWindows.forEach((s) => {
+  //     if (!s.nativeElement.srcObject) {
+  //       const c = this.connections.find(
+  //         (connection) => connection.sessionId === s.nativeElement.id
+  //       );
+  //       s.nativeElement.srcObject = c.stream;
+  //     }
   //   });
   // }
+
+  getVideoWindow(id: string) {}
+
+  public enableScreenCapture() {
+    this.screenCapEnabled = true;
+    this.userVideoService.getUserScreen().subscribe((screen: any) => {
+      screen.getVideoTracks()[0].addEventListener("ended", () => {
+        this.enableUserCam();
+      });
+      this.playStream(this.userWindow, screen);
+    });
+  }
 
   public enableUserCam(): void {
     this.screenCapEnabled = false;
@@ -63,10 +77,7 @@ export class AppComponent {
   }
 
   public nextSource(): void {
-    if (this.EnableVideoToggle) {
-      console.log("toggling devices");
-      this.userVideoService.nextSource();
-    }
+    this.userVideoService.nextSource();
   }
 
   private playStream(elRef: ElementRef, stream: any): void {

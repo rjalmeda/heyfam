@@ -32,6 +32,10 @@ export class AppComponent implements AfterViewChecked {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
+    // this.userVideoService.getUserCam().subscribe((cam) => {
+    //   this.userCam = cam;
+    //   this.playStream(this.userWindow, cam);
+    // });
   }
 
   public ngAfterViewChecked(): void {
