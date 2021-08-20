@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "ng": "ng",
-    "start": "npm run build --prefix ./client && npm run build --prefix ./streamer && node server.js",
+    "installDependencies": "npm install --prefix ./client && npm install --prefix ./streamer",
+    "buildAngular": "npm run build --prefix ./client && npm run build --prefix ./streamer",
+    "start": "npm run installDependencies && npm run buildAngular && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
