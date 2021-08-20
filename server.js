@@ -5,6 +5,8 @@ const io = require('socket.io')(http);
 const port = 4040;
 
 const connections = [];
+const clients = [];
+const streamers = [];
 
 app.use(express.static("./client/dist/client"))
 
@@ -19,6 +21,20 @@ io.on('connection', socket => {
         name: ''
     }
 
+    let currentList;
+
+    socket.on('registerClient', () => {
+        currentList = clients;
+        clients.push(connection);
+        socket.broadcast.emit("newClientConnected", connection);
+    })
+
+    socket.on('registerStreamer', () => {
+        currentList = streamers;
+        streamers.push(connection);
+        socket.broadcast.emit("newStreamerConnected", connection);
+    })
+
     connections.push(connection)
 
     socket.broadcast.emit('newUserConnected', connection)
@@ -29,9 +45,9 @@ io.on('connection', socket => {
     })
 
     socket.on('disconnect', () => {
-        const idx = connections.findIndex(c => c.sessionId === socket.id);
+        const idx = currentList.findIndex(c => c.sessionId === socket.id);
         socket.broadcast.emit('userDisconnected', socket.id)
-        connections.splice(idx, 1);
+        currentList.splice(idx, 1);
     })
 
     socket.on('offer', (to, from, offer) => {
