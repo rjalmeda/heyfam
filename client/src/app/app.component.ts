@@ -26,9 +26,6 @@ export class AppComponent {
   @ViewChild("userWindow", { static: false, read: ElementRef })
   private userWindow: ElementRef;
 
-  // @ViewChildren("videoStreams")
-  // private videoStreamsWindows: ElementRef[];
-
   constructor(
     private socketService: SocketServiceService,
     private userVideoService: UserVideoService
@@ -42,17 +39,6 @@ export class AppComponent {
       this.playStream(this.userWindow, cam);
     });
   }
-
-  // public ngAfterViewChecked(): void {
-  //   this.videoStreamsWindows.forEach((s) => {
-  //     if (!s.nativeElement.srcObject) {
-  //       const c = this.connections.find(
-  //         (connection) => connection.sessionId === s.nativeElement.id
-  //       );
-  //       s.nativeElement.srcObject = c.stream;
-  //     }
-  //   });
-  // }
 
   getVideoWindow(id: string) {}
 

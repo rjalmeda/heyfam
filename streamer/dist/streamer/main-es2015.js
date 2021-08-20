@@ -78,10 +78,6 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        // this.userVideoService.getUserCam().subscribe((cam) => {
-        //   this.userCam = cam;
-        //   this.playStream(this.userWindow, cam);
-        // });
     }
     ngAfterViewChecked() {
         this.videoStreamsWindows.forEach((s) => {
@@ -125,7 +121,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
     } if (rf & 2) {
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.videoStreamsWindows = _t);
-    } }, decls: 1, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 1, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.connections);
@@ -306,15 +302,15 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    connection.peerConnection.addTrack(track, streams);
-                });
+                // const streams = await navigator.mediaDevices.getUserMedia({
+                //   video: true,
+                //   audio: {
+                //     echoCancellation: true,
+                //   },
+                // });
+                // streams.getTracks().forEach((track) => {
+                //   connection.peerConnection.addTrack(track, streams);
+                // });
                 connection.peerConnection.onconnectionstatechange = (event) => { };
                 connection.peerConnection.onicecandidate = (event) => {
                     if (event.candidate) {
@@ -353,15 +349,15 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    d.peerConnection.addTrack(track, streams);
-                });
+                // const streams = await navigator.mediaDevices.getUserMedia({
+                //   video: true,
+                //   audio: {
+                //     echoCancellation: true,
+                //   },
+                // });
+                // streams.getTracks().forEach((track) => {
+                //   d.peerConnection.addTrack(track, streams);
+                // });
                 d.peerConnection.onconnectionstatechange = (event) => { };
                 d.peerConnection.onicecandidate = (event) => {
                     if (event.candidate) {

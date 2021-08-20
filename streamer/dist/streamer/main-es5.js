@@ -136,10 +136,7 @@
           this.screenCapEnabled = false;
           this.socketService.connections.subscribe(function (d) {
             _this.connections = d;
-          }); // this.userVideoService.getUserCam().subscribe((cam) => {
-          //   this.userCam = cam;
-          //   this.playStream(this.userWindow, cam);
-          // });
+          });
         }
 
         _createClass(AppComponent, [{
@@ -212,7 +209,7 @@
         },
         decls: 1,
         vars: 1,
-        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
+        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 3, "id"], ["videoStreams", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
@@ -543,7 +540,7 @@
               return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                 var _this5 = this;
 
-                var connection, streams, answer;
+                var connection, answer;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -553,24 +550,19 @@
                         });
 
                         if (!connection) {
-                          _context.next = 17;
+                          _context.next = 13;
                           break;
                         }
 
-                        connection.peerConnection = this.userVideoService.createPeerConnection();
-                        _context.next = 5;
-                        return navigator.mediaDevices.getUserMedia({
-                          video: true,
-                          audio: {
-                            echoCancellation: true
-                          }
-                        });
-
-                      case 5:
-                        streams = _context.sent;
-                        streams.getTracks().forEach(function (track) {
-                          connection.peerConnection.addTrack(track, streams);
-                        });
+                        connection.peerConnection = this.userVideoService.createPeerConnection(); // const streams = await navigator.mediaDevices.getUserMedia({
+                        //   video: true,
+                        //   audio: {
+                        //     echoCancellation: true,
+                        //   },
+                        // });
+                        // streams.getTracks().forEach((track) => {
+                        //   connection.peerConnection.addTrack(track, streams);
+                        // });
 
                         connection.peerConnection.onconnectionstatechange = function (event) {};
 
@@ -586,18 +578,18 @@
                           connection.stream.addTrack(event.track);
                         };
 
-                        _context.next = 13;
+                        _context.next = 9;
                         return connection.peerConnection.createAnswer();
 
-                      case 13:
+                      case 9:
                         answer = _context.sent;
-                        _context.next = 16;
+                        _context.next = 12;
                         return connection.peerConnection.setLocalDescription(answer);
 
-                      case 16:
+                      case 12:
                         this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
 
-                      case 17:
+                      case 13:
                       case "end":
                         return _context.stop();
                     }
@@ -676,25 +668,20 @@
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                   var _this6 = this;
 
-                  var streams, offer;
+                  var offer;
                   return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
                       switch (_context4.prev = _context4.next) {
                         case 0:
-                          d.peerConnection = this.userVideoService.createPeerConnection();
-                          _context4.next = 3;
-                          return navigator.mediaDevices.getUserMedia({
-                            video: true,
-                            audio: {
-                              echoCancellation: true
-                            }
-                          });
-
-                        case 3:
-                          streams = _context4.sent;
-                          streams.getTracks().forEach(function (track) {
-                            d.peerConnection.addTrack(track, streams);
-                          });
+                          d.peerConnection = this.userVideoService.createPeerConnection(); // const streams = await navigator.mediaDevices.getUserMedia({
+                          //   video: true,
+                          //   audio: {
+                          //     echoCancellation: true,
+                          //   },
+                          // });
+                          // streams.getTracks().forEach((track) => {
+                          //   d.peerConnection.addTrack(track, streams);
+                          // });
 
                           d.peerConnection.onconnectionstatechange = function (event) {};
 
@@ -704,18 +691,18 @@
                             }
                           };
 
-                          _context4.next = 9;
+                          _context4.next = 5;
                           return d.peerConnection.createOffer();
 
-                        case 9:
+                        case 5:
                           offer = _context4.sent;
-                          _context4.next = 12;
+                          _context4.next = 8;
                           return d.peerConnection.setLocalDescription(offer);
 
-                        case 12:
+                        case 8:
                           this.socket.emit("offer", d.sessionId, this.socket.id, offer);
 
-                        case 13:
+                        case 9:
                         case "end":
                           return _context4.stop();
                       }

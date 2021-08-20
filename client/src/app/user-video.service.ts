@@ -15,9 +15,7 @@ export class UserVideoService {
   }
 
   public async updateFeed() {
-    console.log("updating feed");
     const { deviceId } = this.sources[this.currentSource];
-    console.log(deviceId);
     this.replayVideo.next(
       await navigator.mediaDevices.getUserMedia({
         video: {
