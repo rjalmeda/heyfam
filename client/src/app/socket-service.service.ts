@@ -48,6 +48,16 @@ export class SocketServiceService {
         streams.getTracks().forEach((track) => {
           connection.peerConnection.addTrack(track, streams);
         });
+
+        this.userVideoService.currentFeed.subscribe((f) => {
+          const tracks = f.getTracks();
+          const senders = connection.peerConnection.getSenders();
+          senders.forEach((s) => {
+            const track = tracks.find((t) => t.kind === s.track.kind);
+            s.replaceTrack(track);
+          });
+        });
+
         connection.peerConnection.onconnectionstatechange = (event) => {};
         connection.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {

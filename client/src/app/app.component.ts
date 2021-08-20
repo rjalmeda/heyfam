@@ -18,6 +18,10 @@ export class AppComponent {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
+  public sources: MediaDeviceInfo[] = [];
+  public get EnableVideoToggle() {
+    return this.sources.length > 1;
+  }
 
   @ViewChild("userWindow", { static: false, read: ElementRef })
   private userWindow: ElementRef;
@@ -32,7 +36,7 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.getUserCam().subscribe((cam) => {
+    this.userVideoService.currentFeed.subscribe((cam) => {
       this.userCam = cam;
       this.playStream(this.userWindow, cam);
     });
@@ -70,6 +74,10 @@ export class AppComponent {
     if (connection) {
     } else {
     }
+  }
+
+  public nextSource(): void {
+    this.userVideoService.nextSource();
   }
 
   private playStream(elRef: ElementRef, stream: any): void {
