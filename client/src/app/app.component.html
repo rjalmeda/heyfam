@@ -1,0 +1,8 @@
+<ng-container *ngFor="let c of connections">
+  <video width="100" #clientFeed controls autoplay id="{{c.userId}}">
+  </video>
+</ng-container>
+
+<video #userWindow style="border: 1px solid red;" width="400" height="300">
+</video>
+<button *ngIf="!screenCapEnabled" (click)="enableScreenCapture()">Screen Cap</button>
