@@ -12,7 +12,6 @@ export class UserVideoService {
 
   constructor() {
     this.enumerateVideoDevices();
-    navigator.mediaDevices.getUserMedia({ video: true });
   }
 
   public async updateFeed() {
@@ -62,6 +61,7 @@ export class UserVideoService {
   }
 
   private async enumerateVideoDevices() {
+    await navigator.mediaDevices.getUserMedia({ video: true });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter((device) =>
       device.kind.toLowerCase().includes("videoinput")
