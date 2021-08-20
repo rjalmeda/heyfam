@@ -25,20 +25,13 @@ export class SocketServiceService {
 
   getSocket() {
     this.socket = window["socketIo"]();
-    this.socket.on("connect", () => {
-      console.log("socket connected");
-    });
+    this.socket.on("connect", () => {});
   }
 
   setupListeners() {
-    this.socket.on("sessionId", (data) => {
-      console.log(data);
-      console.log(this.socket);
-    });
+    this.socket.on("sessionId", (data) => {});
 
     this.socket.on("offer", async (from, offer) => {
-      console.log("offer received");
-      console.log();
       const connection = this.allUsers.find((u) => u.sessionId === from);
       if (connection) {
         connection.peerConnection =
@@ -46,15 +39,14 @@ export class SocketServiceService {
 
         const streams = await navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: true,
+          audio: {
+            echoCancellation: true,
+          },
         });
         streams.getTracks().forEach((track) => {
           connection.peerConnection.addTrack(track, streams);
         });
-        connection.peerConnection.onconnectionstatechange = (event) => {
-          console.log("peer connection event");
-          console.log(event);
-        };
+        connection.peerConnection.onconnectionstatechange = (event) => {};
         connection.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {
             this.socket.emit(
@@ -68,6 +60,9 @@ export class SocketServiceService {
         connection.peerConnection.setRemoteDescription(
           new RTCSessionDescription(offer)
         );
+        connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+          connection.stream.addTrack(event.track);
+        };
         const answer = await connection.peerConnection.createAnswer();
         await connection.peerConnection.setLocalDescription(answer);
         this.socket.emit(
@@ -80,42 +75,40 @@ export class SocketServiceService {
     });
 
     this.socket.on("answer", async (from, answer) => {
-      console.log("answer received");
       const connection = this.allUsers.find((u) => u.sessionId === from);
       const remoteDesc = new RTCSessionDescription(answer);
+      connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+        connection.stream.addTrack(event.track);
+      };
       await connection.peerConnection.setRemoteDescription(remoteDesc);
     });
 
     this.socket.on("iceCandidate", async (from, iceCandidate) => {
-      console.log("ice candidate received");
-      console.log(from);
       const connection = this.allUsers.find((u) => u.sessionId === from);
       if (iceCandidate) {
-        console.log(iceCandidate);
-        await connection.peerConnection.addIceCandidate(iceCandidate);
+        try {
+          await connection.peerConnection.addIceCandidate(iceCandidate);
+        } catch (e) {
+          // ignore errors
+        }
       }
     });
 
     this.socket.on("allUsers", (data) => {
-      console.log(this.socket);
-      console.log("allUsers");
       data = data.filter((session) => session.sessionId !== this.socket.id);
-      console.log(data);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
         const streams = await navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: true,
+          audio: {
+            echoCancellation: true,
+          },
         });
         streams.getTracks().forEach((track) => {
           d.peerConnection.addTrack(track, streams);
         });
-        d.peerConnection.onconnectionstatechange = (event) => {
-          console.log("peer connection event");
-          console.log(event);
-        };
+        d.peerConnection.onconnectionstatechange = (event) => {};
         d.peerConnection.onicecandidate = (event) => {
-          console.log("ice candidate event");
           if (event.candidate) {
             this.socket.emit(
               "iceCandidate",
@@ -125,12 +118,14 @@ export class SocketServiceService {
             );
           }
         };
-        d.peerConnection.on;
         const offer = await d.peerConnection.createOffer();
         await d.peerConnection.setLocalDescription(offer);
         this.socket.emit("offer", d.sessionId, this.socket.id, offer);
       });
       this.allUsers = data;
+      this.allUsers.forEach((u) => {
+        u.stream = new MediaStream();
+      });
       this.connectionsSubject.next(data);
     });
 
@@ -143,6 +138,7 @@ export class SocketServiceService {
     });
 
     this.socket.on("newUserConnected", (connection) => {
+      connection.stream = new MediaStream();
       this.allUsers.push(connection);
       this.connectionsSubject.next(this.allUsers);
     });
@@ -153,4 +149,5 @@ export interface IConnection {
   sessionId: string;
   name: string;
   peerConnection: RTCPeerConnection;
+  stream: MediaStream;
 }
