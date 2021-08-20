@@ -212,7 +212,7 @@
         },
         decls: 1,
         vars: 1,
-        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
+        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 3, "id"], ["videoStreams", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
