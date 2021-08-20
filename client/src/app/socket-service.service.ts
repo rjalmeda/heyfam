@@ -50,6 +50,7 @@ export class SocketServiceService {
         });
 
         this.userVideoService.currentFeed.subscribe((f) => {
+          f = f.clone();
           const tracks = f.getTracks();
           const senders = connection.peerConnection.getSenders();
           senders.forEach((s) => {

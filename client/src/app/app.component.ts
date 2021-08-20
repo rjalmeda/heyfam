@@ -33,7 +33,8 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.currentFeed.subscribe(async (cam) => {
+    this.userVideoService.currentFeed.subscribe((cam) => {
+      cam = cam.clone();
       this.sources = this.userVideoService.sources;
       this.playStream(this.userWindow, cam);
     });

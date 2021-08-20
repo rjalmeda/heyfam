@@ -13,7 +13,7 @@ import {
 export class UserVideoService {
   public sources: MediaDeviceInfo[] = [];
   public currentSource: number = 0;
-  public replayVideo = new Subject<MediaStream>();
+  public replayVideo = new ReplaySubject<MediaStream>();
   public currentFeed = this.replayVideo.asObservable();
 
   constructor() {
