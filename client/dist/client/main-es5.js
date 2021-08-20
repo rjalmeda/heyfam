@@ -493,23 +493,26 @@
                 while (1) {
                   switch (_context3.prev = _context3.next) {
                     case 0:
-                      navigator.mediaDevices.getUserMedia({
+                      _context3.next = 2;
+                      return navigator.mediaDevices.getUserMedia({
                         video: true,
                         audio: true
                       });
-                      _context3.next = 3;
+
+                    case 2:
+                      _context3.next = 4;
                       return navigator.mediaDevices.enumerateDevices();
 
-                    case 3:
+                    case 4:
                       devices = _context3.sent;
                       videoDevices = devices.filter(function (device) {
-                        return device.kind.toLowerCase().includes("videoinput");
+                        return !device.kind.toLowerCase().includes("audio");
                       });
                       this.sources = videoDevices;
                       this.currentSource = 0;
                       this.updateFeed();
 
-                    case 8:
+                    case 9:
                     case "end":
                       return _context3.stop();
                   }
