@@ -36,7 +36,7 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.getFeed().subscribe((cam) => {
+    this.userVideoService.getFeed().then((cam) => {
       this.userCam = cam;
       this.playStream(this.userWindow, cam);
     });

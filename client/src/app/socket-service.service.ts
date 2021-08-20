@@ -49,7 +49,7 @@ export class SocketServiceService {
           connection.peerConnection.addTrack(track, streams);
         });
 
-        this.userVideoService.getFeed().subscribe((f) => {
+        this.userVideoService.getFeed().then((f) => {
           const tracks = f.getTracks();
           const senders = connection.peerConnection.getSenders();
           senders.forEach((s) => {

@@ -7,15 +7,13 @@ import { from, Observable, ReplaySubject } from "rxjs";
 export class UserVideoService {
   constructor() {}
 
-  public getFeed() {
-    return from(
-      navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: {
-          echoCancellation: true,
-        },
-      })
-    );
+  public async getFeed() {
+    return await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: {
+        echoCancellation: true,
+      },
+    });
   }
 
   public getUserScreen() {

@@ -75,7 +75,7 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.getFeed().subscribe((cam) => {
+        this.userVideoService.getFeed().then((cam) => {
             this.userCam = cam;
             this.playStream(this.userWindow, cam);
         });
@@ -226,20 +226,24 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserVideoService", function() { return UserVideoService; });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
+
 
 
 
 class UserVideoService {
     constructor() { }
     getFeed() {
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: {
-                echoCancellation: true,
-            },
-        }));
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            return yield navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: {
+                    echoCancellation: true,
+                },
+            });
+        });
     }
     getUserScreen() {
         const displayMediaOptions = {
@@ -249,7 +253,7 @@ class UserVideoService {
             audio: false,
         };
         const md = navigator.mediaDevices;
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(md.getDisplayMedia(displayMediaOptions));
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
     }
     createPeerConnection() {
         const configuration = {
@@ -263,9 +267,9 @@ class UserVideoService {
     }
 }
 UserVideoService.ɵfac = function UserVideoService_Factory(t) { return new (t || UserVideoService)(); };
-UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](UserVideoService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"],
         args: [{
                 providedIn: "root",
             }]
@@ -326,7 +330,7 @@ class SocketServiceService {
                 streams.getTracks().forEach((track) => {
                     connection.peerConnection.addTrack(track, streams);
                 });
-                this.userVideoService.getFeed().subscribe((f) => {
+                this.userVideoService.getFeed().then((f) => {
                     const tracks = f.getTracks();
                     const senders = connection.peerConnection.getSenders();
                     senders.forEach((s) => {
