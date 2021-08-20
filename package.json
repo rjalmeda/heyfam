@@ -12,7 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "socket.io": "^3.0.4"
+    "socket.io": "^3.0.4",
+    "@angular-devkit/build-angular": "~0.1100.5",
+    "@angular/cli": "~11.0.5",
+    "@angular/compiler-cli": "~11.0.5"
   },
   "nodemonConfig": {
     "ignore": ["client/dist/*"]
