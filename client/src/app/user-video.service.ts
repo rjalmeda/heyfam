@@ -15,7 +15,7 @@ export class UserVideoService {
   public currentSource: number = 0;
   public replayVideo = new ReplaySubject<any>();
   public currentFeed = this.replayVideo.asObservable();
-  private media: MediaStream;
+  public media: MediaStream;
 
   constructor() {
     this.enumerateVideoDevices();
@@ -31,23 +31,23 @@ export class UserVideoService {
         echoCancellation: true,
       },
     });
-    this.media = media;
+    this.media = media.clone();
     this.replayVideo.next(media);
   }
 
   public getStream() {}
 
-  public getUserScreen() {
-    const displayMediaOptions = {
-      video: {
-        cursor: "always",
-      },
-      audio: false,
-    };
+  // public getUserScreen() {
+  //   const displayMediaOptions = {
+  //     video: {
+  //       cursor: "always",
+  //     },
+  //     audio: false,
+  //   };
 
-    const md: any = navigator.mediaDevices;
-    return from(md.getDisplayMedia(displayMediaOptions));
-  }
+  //   const md: any = navigator.mediaDevices;
+  //   return from(md.getDisplayMedia(displayMediaOptions));
+  // }
 
   public createPeerConnection() {
     const configuration = {

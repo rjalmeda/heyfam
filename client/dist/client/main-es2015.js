@@ -238,21 +238,21 @@ class UserVideoService {
                     echoCancellation: true,
                 },
             });
-            this.media = media;
+            this.media = media.clone();
             this.replayVideo.next(media);
         });
     }
     getStream() { }
-    getUserScreen() {
-        const displayMediaOptions = {
-            video: {
-                cursor: "always",
-            },
-            audio: false,
-        };
-        const md = navigator.mediaDevices;
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
-    }
+    // public getUserScreen() {
+    //   const displayMediaOptions = {
+    //     video: {
+    //       cursor: "always",
+    //     },
+    //     audio: false,
+    //   };
+    //   const md: any = navigator.mediaDevices;
+    //   return from(md.getDisplayMedia(displayMediaOptions));
+    // }
     createPeerConnection() {
         const configuration = {
             configuration: {
@@ -341,15 +341,9 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
-                // const streams = await navigator.mediaDevices.getUserMedia({
-                //   video: true,
-                //   audio: {
-                //     echoCancellation: true,
-                //   },
-                // });
-                // streams.getTracks().forEach((track) => {
-                //   connection.peerConnection.addTrack(track, streams);
-                // });
+                this.userVideoService.media.getTracks().forEach((track) => {
+                    connection.peerConnection.addTrack(track, this.userVideoService.media);
+                });
                 this.userVideoService.currentFeed.subscribe((f) => {
                     const tracks = f.getTracks();
                     const senders = connection.peerConnection.getSenders();
@@ -396,6 +390,9 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
+                this.userVideoService.media.getTracks().forEach((track) => {
+                    d.peerConnection.addTrack(track, this.userVideoService.media);
+                });
                 this.userVideoService.currentFeed.subscribe((f) => {
                     const tracks = f.getTracks();
                     const senders = d.peerConnection.getSenders();
@@ -415,9 +412,6 @@ class SocketServiceService {
                 this.socket.emit("offer", d.sessionId, this.socket.id, offer);
             }));
             this.allUsers = data;
-            // this.allUsers.forEach((u) => {
-            //   u.stream = new MediaStream();
-            // });
             this.connectionsSubject.next(data);
         });
         this.socket.on("userDisconnected", (sessionId) => {
@@ -428,7 +422,6 @@ class SocketServiceService {
             this.connectionsSubject.next(this.allUsers);
         });
         this.socket.on("newStreamerConnected", (connection) => {
-            // connection.stream = new MediaStream();
             this.allUsers.push(connection);
             this.connectionsSubject.next(this.allUsers);
         });

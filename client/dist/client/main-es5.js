@@ -416,7 +416,7 @@
 
                     case 3:
                       media = _context.sent;
-                      this.media = media;
+                      this.media = media.clone();
                       this.replayVideo.next(media);
 
                     case 6:
@@ -429,19 +429,17 @@
           }
         }, {
           key: "getStream",
-          value: function getStream() {}
-        }, {
-          key: "getUserScreen",
-          value: function getUserScreen() {
-            var displayMediaOptions = {
-              video: {
-                cursor: "always"
-              },
-              audio: false
-            };
-            var md = navigator.mediaDevices;
-            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
-          }
+          value: function getStream() {} // public getUserScreen() {
+          //   const displayMediaOptions = {
+          //     video: {
+          //       cursor: "always",
+          //     },
+          //     audio: false,
+          //   };
+          //   const md: any = navigator.mediaDevices;
+          //   return from(md.getDisplayMedia(displayMediaOptions));
+          // }
+
         }, {
           key: "createPeerConnection",
           value: function createPeerConnection() {
@@ -625,20 +623,14 @@
                         });
 
                         if (!connection) {
-                          _context3.next = 13;
+                          _context3.next = 14;
                           break;
                         }
 
-                        connection.peerConnection = this.userVideoService.createPeerConnection(); // const streams = await navigator.mediaDevices.getUserMedia({
-                        //   video: true,
-                        //   audio: {
-                        //     echoCancellation: true,
-                        //   },
-                        // });
-                        // streams.getTracks().forEach((track) => {
-                        //   connection.peerConnection.addTrack(track, streams);
-                        // });
-
+                        connection.peerConnection = this.userVideoService.createPeerConnection();
+                        this.userVideoService.media.getTracks().forEach(function (track) {
+                          connection.peerConnection.addTrack(track, _this4.userVideoService.media);
+                        });
                         this.userVideoService.currentFeed.subscribe(function (f) {
                           var tracks = f.getTracks();
                           var senders = connection.peerConnection.getSenders();
@@ -662,18 +654,18 @@
                         //   connection.stream.addTrack(event.track);
                         // };
 
-                        _context3.next = 9;
+                        _context3.next = 10;
                         return connection.peerConnection.createAnswer();
 
-                      case 9:
+                      case 10:
                         answer = _context3.sent;
-                        _context3.next = 12;
+                        _context3.next = 13;
                         return connection.peerConnection.setLocalDescription(answer);
 
-                      case 12:
+                      case 13:
                         this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
 
-                      case 13:
+                      case 14:
                       case "end":
                         return _context3.stop();
                     }
@@ -756,6 +748,9 @@
                       switch (_context6.prev = _context6.next) {
                         case 0:
                           d.peerConnection = this.userVideoService.createPeerConnection();
+                          this.userVideoService.media.getTracks().forEach(function (track) {
+                            d.peerConnection.addTrack(track, _this5.userVideoService.media);
+                          });
                           this.userVideoService.currentFeed.subscribe(function (f) {
                             var tracks = f.getTracks();
                             var senders = d.peerConnection.getSenders();
@@ -775,18 +770,18 @@
                             }
                           };
 
-                          _context6.next = 6;
+                          _context6.next = 7;
                           return d.peerConnection.createOffer();
 
-                        case 6:
+                        case 7:
                           offer = _context6.sent;
-                          _context6.next = 9;
+                          _context6.next = 10;
                           return d.peerConnection.setLocalDescription(offer);
 
-                        case 9:
+                        case 10:
                           this.socket.emit("offer", d.sessionId, this.socket.id, offer);
 
-                        case 10:
+                        case 11:
                         case "end":
                           return _context6.stop();
                       }
@@ -794,9 +789,7 @@
                   }, _callee6, this);
                 }));
               });
-              _this3.allUsers = data; // this.allUsers.forEach((u) => {
-              //   u.stream = new MediaStream();
-              // });
+              _this3.allUsers = data;
 
               _this3.connectionsSubject.next(data);
             });
@@ -812,7 +805,6 @@
               _this3.connectionsSubject.next(_this3.allUsers);
             });
             this.socket.on("newStreamerConnected", function (connection) {
-              // connection.stream = new MediaStream();
               _this3.allUsers.push(connection);
 
               _this3.connectionsSubject.next(_this3.allUsers);

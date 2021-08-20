@@ -39,15 +39,12 @@ export class SocketServiceService {
         connection.peerConnection =
           this.userVideoService.createPeerConnection();
 
-        // const streams = await navigator.mediaDevices.getUserMedia({
-        //   video: true,
-        //   audio: {
-        //     echoCancellation: true,
-        //   },
-        // });
-        // streams.getTracks().forEach((track) => {
-        //   connection.peerConnection.addTrack(track, streams);
-        // });
+        this.userVideoService.media.getTracks().forEach((track) => {
+          connection.peerConnection.addTrack(
+            track,
+            this.userVideoService.media
+          );
+        });
 
         this.userVideoService.currentFeed.subscribe((f) => {
           const tracks = f.getTracks();
@@ -111,6 +108,10 @@ export class SocketServiceService {
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
 
+        this.userVideoService.media.getTracks().forEach((track) => {
+          d.peerConnection.addTrack(track, this.userVideoService.media);
+        });
+
         this.userVideoService.currentFeed.subscribe((f) => {
           const tracks = f.getTracks();
           const senders = d.peerConnection.getSenders();
@@ -136,9 +137,6 @@ export class SocketServiceService {
         this.socket.emit("offer", d.sessionId, this.socket.id, offer);
       });
       this.allUsers = data;
-      // this.allUsers.forEach((u) => {
-      //   u.stream = new MediaStream();
-      // });
       this.connectionsSubject.next(data);
     });
 
@@ -151,7 +149,6 @@ export class SocketServiceService {
     });
 
     this.socket.on("newStreamerConnected", (connection) => {
-      // connection.stream = new MediaStream();
       this.allUsers.push(connection);
       this.connectionsSubject.next(this.allUsers);
     });
