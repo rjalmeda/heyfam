@@ -3,11 +3,8 @@
   </video>
 </ng-container> -->
 
-<div class="video-container">
+<div class="video-container" (click)="nextSource()">
   <video #userWindow style="border: 1px solid red;">
   </video>
-  <div *ngIf="EnableVideoToggle" class="controller-button" (click)="nextSource()">
-
-  </div>
 </div>
 

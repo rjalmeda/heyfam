@@ -77,7 +77,9 @@ export class AppComponent {
   }
 
   public nextSource(): void {
-    this.userVideoService.nextSource();
+    if (this.EnableVideoToggle) {
+      this.userVideoService.nextSource();
+    }
   }
 
   private playStream(elRef: ElementRef, stream: any): void {

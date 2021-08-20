@@ -97,32 +97,8 @@
       var _user_video_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
       /*! ./user-video.service */
       "ghKE");
-      /* harmony import */
-
-
-      var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
-      /*! @angular/common */
-      "ofXK");
 
       var _c0 = ["userWindow"];
-
-      function AppComponent_div_3_Template(rf, ctx) {
-        if (rf & 1) {
-          var _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 4);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_div_3_Template_div_click_0_listener() {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r3);
-
-            var ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-            return ctx_r2.nextSource();
-          });
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        }
-      }
 
       var AppComponent = /*#__PURE__*/function () {
         // @ViewChildren("videoStreams")
@@ -188,7 +164,9 @@
         }, {
           key: "nextSource",
           value: function nextSource() {
-            this.userVideoService.nextSource();
+            if (this.EnableVideoToggle) {
+              this.userVideoService.nextSource();
+            }
           }
         }, {
           key: "playStream",
@@ -227,27 +205,22 @@
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
           }
         },
-        decls: 4,
-        vars: 1,
-        consts: [[1, "video-container"], [2, "border", "1px solid red"], ["userWindow", ""], ["class", "controller-button", 3, "click", 4, "ngIf"], [1, "controller-button", 3, "click"]],
+        decls: 3,
+        vars: 0,
+        consts: [[1, "video-container", 3, "click"], [2, "border", "1px solid red"], ["userWindow", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
 
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
+            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_Template_div_click_0_listener() {
+              return ctx.nextSource();
+            });
 
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, AppComponent_div_3_Template, 1, 0, "div", 3);
+            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
 
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
           }
-
-          if (rf & 2) {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.EnableVideoToggle);
-          }
         },
-        directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgIf"]],
         styles: [".video-container[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  width: 98%;\n  height: 98%;\n  overflow: hidden;\n  z-index: 0;\n}\n.video-container[_ngcontent-%COMP%]   .controller-button[_ngcontent-%COMP%] {\n  z-index: 1;\n  position: absolute;\n  top: 3em;\n  right: 3em;\n  width: 3em;\n  height: 3em;\n  border: 1px solid green;\n}\n.video-container[_ngcontent-%COMP%]   video[_ngcontent-%COMP%] {\n  \n  min-width: 100%;\n  min-height: 100%;\n  \n  width: auto;\n  height: auto;\n  \n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uLy4uL2FwcC5jb21wb25lbnQuc2NzcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtFQUNJLGtCQUFBO0VBQ0EsTUFBQTtFQUNBLFNBQUE7RUFDQSxVQUFBO0VBQ0EsV0FBQTtFQUNBLGdCQUFBO0VBQ0EsVUFBQTtBQUNKO0FBQ0k7RUFDSSxVQUFBO0VBQ0Esa0JBQUE7RUFDQSxRQUFBO0VBQ0EsVUFBQTtFQUNBLFVBQUE7RUFDQSxXQUFBO0VBQ0EsdUJBQUE7QUFDUjtBQUVFO0VBQ0UsOENBQUE7RUFDQSxlQUFBO0VBQ0EsZ0JBQUE7RUFFQSwrRkFBQTtFQUNBLFdBQUE7RUFDQSxZQUFBO0VBRUEscUJBQUE7RUFDQSxrQkFBQTtFQUNBLFFBQUE7RUFDQSxTQUFBO0VBQ0EsZ0NBQUE7QUFESiIsImZpbGUiOiJhcHAuY29tcG9uZW50LnNjc3MiLCJzb3VyY2VzQ29udGVudCI6WyIudmlkZW8tY29udGFpbmVyIHtcbiAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgdG9wOiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICB3aWR0aDogOTglO1xuICAgIGhlaWdodDogOTglOyBcbiAgICBvdmVyZmxvdzogaGlkZGVuO1xuICAgIHotaW5kZXg6IDA7XG5cbiAgICAuY29udHJvbGxlci1idXR0b24ge1xuICAgICAgICB6LWluZGV4OiAxO1xuICAgICAgICBwb3NpdGlvbjogYWJzb2x1dGU7XG4gICAgICAgIHRvcDogM2VtO1xuICAgICAgICByaWdodDogM2VtO1xuICAgICAgICB3aWR0aDogM2VtO1xuICAgICAgICBoZWlnaHQ6IDNlbTtcbiAgICAgICAgYm9yZGVyOiAxcHggc29saWQgZ3JlZW47XG4gICAgfVxuICB9XG4gIC52aWRlby1jb250YWluZXIgdmlkZW8ge1xuICAgIC8qIE1ha2UgdmlkZW8gdG8gYXQgbGVhc3QgMTAwJSB3aWRlIGFuZCB0YWxsICovXG4gICAgbWluLXdpZHRoOiAxMDAlOyBcbiAgICBtaW4taGVpZ2h0OiAxMDAlOyBcbiAgXG4gICAgLyogU2V0dGluZyB3aWR0aCAmIGhlaWdodCB0byBhdXRvIHByZXZlbnRzIHRoZSBicm93c2VyIGZyb20gc3RyZXRjaGluZyBvciBzcXVpc2hpbmcgdGhlIHZpZGVvICovXG4gICAgd2lkdGg6IGF1dG87XG4gICAgaGVpZ2h0OiBhdXRvO1xuICBcbiAgICAvKiBDZW50ZXIgdGhlIHZpZGVvICovXG4gICAgcG9zaXRpb246IGFic29sdXRlO1xuICAgIHRvcDogNTAlO1xuICAgIGxlZnQ6IDUwJTtcbiAgICB0cmFuc2Zvcm06IHRyYW5zbGF0ZSgtNTAlLC01MCUpO1xuICB9Il19 */"]
       });
       /*@__PURE__*/
