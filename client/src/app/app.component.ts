@@ -35,21 +35,22 @@ export class AppComponent {
     });
     this.userVideoService.currentFeed.subscribe(async (cam) => {
       this.sources = this.userVideoService.sources;
-      this.playStream(this.userWindow, cam);
+      const stream = this.userVideoService.streamClone;
+      this.playStream(this.userWindow, stream);
     });
   }
 
   getVideoWindow(id: string) {}
 
-  public enableScreenCapture() {
-    this.screenCapEnabled = true;
-    this.userVideoService.getUserScreen().subscribe((screen: any) => {
-      screen.getVideoTracks()[0].addEventListener("ended", () => {
-        this.enableUserCam();
-      });
-      this.playStream(this.userWindow, screen);
-    });
-  }
+  // public enableScreenCapture() {
+  //   this.screenCapEnabled = true;
+  //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+  //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+  //       this.enableUserCam();
+  //     });
+  //     this.playStream(this.userWindow, screen);
+  //   });
+  // }
 
   public enableUserCam(): void {
     this.screenCapEnabled = false;

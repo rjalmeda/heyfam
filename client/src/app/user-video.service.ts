@@ -9,6 +9,7 @@ export class UserVideoService {
   public currentSource: number = 0;
   public replayVideo = new ReplaySubject<MediaStream>();
   public currentFeed = this.replayVideo.asObservable();
+  public streamClone: MediaStream;
 
   constructor() {
     this.enumerateVideoDevices();
@@ -24,6 +25,7 @@ export class UserVideoService {
         echoCancellation: true,
       },
     });
+    this.streamClone = stream.clone();
     this.replayVideo.next(stream);
   }
 
@@ -60,7 +62,10 @@ export class UserVideoService {
   }
 
   private async enumerateVideoDevices() {
-    navigator.mediaDevices.getUserMedia({ video: true });
+    navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter((device) =>
       device.kind.toLowerCase().includes("videoinput")

@@ -122,14 +122,16 @@
           });
           this.userVideoService.currentFeed.subscribe(function (cam) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+              var stream;
               return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                   switch (_context.prev = _context.next) {
                     case 0:
                       this.sources = this.userVideoService.sources;
-                      this.playStream(this.userWindow, cam);
+                      stream = this.userVideoService.streamClone;
+                      this.playStream(this.userWindow, stream);
 
-                    case 2:
+                    case 3:
                     case "end":
                       return _context.stop();
                   }
@@ -141,21 +143,16 @@
 
         _createClass(AppComponent, [{
           key: "getVideoWindow",
-          value: function getVideoWindow(id) {}
-        }, {
-          key: "enableScreenCapture",
-          value: function enableScreenCapture() {
-            var _this2 = this;
+          value: function getVideoWindow(id) {} // public enableScreenCapture() {
+          //   this.screenCapEnabled = true;
+          //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+          //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+          //       this.enableUserCam();
+          //     });
+          //     this.playStream(this.userWindow, screen);
+          //   });
+          // }
 
-            this.screenCapEnabled = true;
-            this.userVideoService.getUserScreen().subscribe(function (screen) {
-              screen.getVideoTracks()[0].addEventListener("ended", function () {
-                _this2.enableUserCam();
-              });
-
-              _this2.playStream(_this2.userWindow, screen);
-            });
-          }
         }, {
           key: "enableUserCam",
           value: function enableUserCam() {
@@ -439,9 +436,10 @@
 
                     case 3:
                       stream = _context2.sent;
+                      this.streamClone = stream.clone();
                       this.replayVideo.next(stream);
 
-                    case 5:
+                    case 6:
                     case "end":
                       return _context2.stop();
                   }
@@ -496,7 +494,8 @@
                   switch (_context3.prev = _context3.next) {
                     case 0:
                       navigator.mediaDevices.getUserMedia({
-                        video: true
+                        video: true,
+                        audio: true
                       });
                       _context3.next = 3;
                       return navigator.mediaDevices.enumerateDevices();
@@ -613,22 +612,22 @@
         _createClass(SocketServiceService, [{
           key: "getSocket",
           value: function getSocket() {
-            var _this3 = this;
+            var _this2 = this;
 
             this.socket = window["socketIo"]();
             this.socket.on("connect", function () {
-              _this3.socket.emit("registerClient", {});
+              _this2.socket.emit("registerClient", {});
             });
           }
         }, {
           key: "setupListeners",
           value: function setupListeners() {
-            var _this4 = this;
+            var _this3 = this;
 
             this.socket.on("sessionId", function (data) {});
             this.socket.on("offer", function (from, offer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-                var _this5 = this;
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                var _this4 = this;
 
                 var connection, streams, answer;
                 return regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -673,7 +672,7 @@
 
                         connection.peerConnection.onicecandidate = function (event) {
                           if (event.candidate) {
-                            _this5.socket.emit("iceCandidate", connection.sessionId, _this5.socket.id, event.candidate);
+                            _this4.socket.emit("iceCandidate", connection.sessionId, _this4.socket.id, event.candidate);
                           }
                         };
 
@@ -701,7 +700,7 @@
               }));
             });
             this.socket.on("answer", function (from, answer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                 var connection, remoteDesc;
                 return regeneratorRuntime.wrap(function _callee5$(_context5) {
                   while (1) {
@@ -726,7 +725,7 @@
               }));
             });
             this.socket.on("iceCandidate", function (from, iceCandidate) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
                 var connection;
                 return regeneratorRuntime.wrap(function _callee6$(_context6) {
                   while (1) {
@@ -763,11 +762,11 @@
             });
             this.socket.on("allStreamers", function (data) {
               data = data.filter(function (session) {
-                return session.sessionId !== _this4.socket.id;
+                return session.sessionId !== _this3.socket.id;
               });
               data.forEach(function (d) {
-                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
-                  var _this6 = this;
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee7() {
+                  var _this5 = this;
 
                   var streams, offer;
                   return regeneratorRuntime.wrap(function _callee7$(_context7) {
@@ -793,7 +792,7 @@
 
                           d.peerConnection.onicecandidate = function (event) {
                             if (event.candidate) {
-                              _this6.socket.emit("iceCandidate", d.sessionId, _this6.socket.id, event.candidate);
+                              _this5.socket.emit("iceCandidate", d.sessionId, _this5.socket.id, event.candidate);
                             }
                           };
 
@@ -816,28 +815,28 @@
                   }, _callee7, this);
                 }));
               });
-              _this4.allUsers = data; // this.allUsers.forEach((u) => {
+              _this3.allUsers = data; // this.allUsers.forEach((u) => {
               //   u.stream = new MediaStream();
               // });
 
-              _this4.connectionsSubject.next(data);
+              _this3.connectionsSubject.next(data);
             });
             this.socket.on("userDisconnected", function (sessionId) {
-              var idx = _this4.allUsers.findIndex(function (u) {
+              var idx = _this3.allUsers.findIndex(function (u) {
                 return u.sessionId === sessionId;
               });
 
               if (idx > -1) {
-                _this4.allUsers.splice(idx, 1);
+                _this3.allUsers.splice(idx, 1);
               }
 
-              _this4.connectionsSubject.next(_this4.allUsers);
+              _this3.connectionsSubject.next(_this3.allUsers);
             });
             this.socket.on("newStreamerConnected", function (connection) {
               // connection.stream = new MediaStream();
-              _this4.allUsers.push(connection);
+              _this3.allUsers.push(connection);
 
-              _this4.connectionsSubject.next(_this4.allUsers);
+              _this3.connectionsSubject.next(_this3.allUsers);
             });
           }
         }]);

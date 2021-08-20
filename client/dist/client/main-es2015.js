@@ -72,22 +72,23 @@ class AppComponent {
         });
         this.userVideoService.currentFeed.subscribe((cam) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             this.sources = this.userVideoService.sources;
-            this.playStream(this.userWindow, cam);
+            const stream = this.userVideoService.streamClone;
+            this.playStream(this.userWindow, stream);
         }));
     }
     get EnableVideoToggle() {
         return this.sources.length > 1;
     }
     getVideoWindow(id) { }
-    enableScreenCapture() {
-        this.screenCapEnabled = true;
-        this.userVideoService.getUserScreen().subscribe((screen) => {
-            screen.getVideoTracks()[0].addEventListener("ended", () => {
-                this.enableUserCam();
-            });
-            this.playStream(this.userWindow, screen);
-        });
-    }
+    // public enableScreenCapture() {
+    //   this.screenCapEnabled = true;
+    //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+    //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+    //       this.enableUserCam();
+    //     });
+    //     this.playStream(this.userWindow, screen);
+    //   });
+    // }
     enableUserCam() {
         this.screenCapEnabled = false;
         this.playStream(this.userWindow, this.userCam);
@@ -240,6 +241,7 @@ class UserVideoService {
                     echoCancellation: true,
                 },
             });
+            this.streamClone = stream.clone();
             this.replayVideo.next(stream);
         });
     }
@@ -274,7 +276,10 @@ class UserVideoService {
     }
     enumerateVideoDevices() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            navigator.mediaDevices.getUserMedia({ video: true });
+            navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+            });
             const devices = yield navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter((device) => device.kind.toLowerCase().includes("videoinput"));
             this.sources = videoDevices;
