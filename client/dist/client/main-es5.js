@@ -122,16 +122,14 @@
           });
           this.userVideoService.currentFeed.subscribe(function (cam) {
             return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-              var stream;
               return regeneratorRuntime.wrap(function _callee$(_context) {
                 while (1) {
                   switch (_context.prev = _context.next) {
                     case 0:
                       this.sources = this.userVideoService.sources;
-                      stream = this.userVideoService.streamClone;
-                      this.playStream(this.userWindow, stream);
+                      this.playStream(this.userWindow, cam);
 
-                    case 3:
+                    case 2:
                     case "end":
                       return _context.stop();
                   }
@@ -409,7 +407,7 @@
 
           this.sources = [];
           this.currentSource = 0;
-          this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
+          this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
           this.currentFeed = this.replayVideo.asObservable();
           this.enumerateVideoDevices();
         }
@@ -436,10 +434,9 @@
 
                     case 3:
                       stream = _context2.sent;
-                      this.streamClone = stream.clone();
                       this.replayVideo.next(stream);
 
-                    case 6:
+                    case 5:
                     case "end":
                       return _context2.stop();
                   }

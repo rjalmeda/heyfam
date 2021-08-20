@@ -72,8 +72,7 @@ class AppComponent {
         });
         this.userVideoService.currentFeed.subscribe((cam) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             this.sources = this.userVideoService.sources;
-            const stream = this.userVideoService.streamClone;
-            this.playStream(this.userWindow, stream);
+            this.playStream(this.userWindow, cam);
         }));
     }
     get EnableVideoToggle() {
@@ -226,7 +225,7 @@ class UserVideoService {
     constructor() {
         this.sources = [];
         this.currentSource = 0;
-        this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
+        this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
         this.currentFeed = this.replayVideo.asObservable();
         this.enumerateVideoDevices();
     }
@@ -241,7 +240,6 @@ class UserVideoService {
                     echoCancellation: true,
                 },
             });
-            this.streamClone = stream.clone();
             this.replayVideo.next(stream);
         });
     }

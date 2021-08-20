@@ -1,5 +1,11 @@
 import { Injectable } from "@angular/core";
-import { from, Observable, ReplaySubject } from "rxjs";
+import {
+  BehaviorSubject,
+  from,
+  Observable,
+  ReplaySubject,
+  Subject,
+} from "rxjs";
 
 @Injectable({
   providedIn: "root",
@@ -7,9 +13,8 @@ import { from, Observable, ReplaySubject } from "rxjs";
 export class UserVideoService {
   public sources: MediaDeviceInfo[] = [];
   public currentSource: number = 0;
-  public replayVideo = new ReplaySubject<MediaStream>();
+  public replayVideo = new Subject<MediaStream>();
   public currentFeed = this.replayVideo.asObservable();
-  public streamClone: MediaStream;
 
   constructor() {
     this.enumerateVideoDevices();
@@ -25,7 +30,6 @@ export class UserVideoService {
         echoCancellation: true,
       },
     });
-    this.streamClone = stream.clone();
     this.replayVideo.next(stream);
   }
 

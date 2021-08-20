@@ -35,8 +35,7 @@ export class AppComponent {
     });
     this.userVideoService.currentFeed.subscribe(async (cam) => {
       this.sources = this.userVideoService.sources;
-      const stream = this.userVideoService.streamClone;
-      this.playStream(this.userWindow, stream);
+      this.playStream(this.userWindow, cam);
     });
   }
 
