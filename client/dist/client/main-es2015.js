@@ -61,10 +61,7 @@ __webpack_require__.r(__webpack_exports__);
 
 const _c0 = ["userWindow"];
 function AppComponent_div_3_Template(rf, ctx) { if (rf & 1) {
-    const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_div_3_Template_div_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r3); const ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r2.nextSource(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "div", 3);
 } }
 class AppComponent {
     // @ViewChildren("videoStreams")
@@ -78,7 +75,7 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.currentFeed.subscribe((cam) => {
+        this.userVideoService.getFeed().subscribe((cam) => {
             this.userCam = cam;
             this.playStream(this.userWindow, cam);
         });
@@ -116,9 +113,6 @@ class AppComponent {
         else {
         }
     }
-    nextSource() {
-        this.userVideoService.nextSource();
-    }
     playStream(elRef, stream) {
         const videoWindow = elRef.nativeElement;
         videoWindow.srcObject = stream;
@@ -133,7 +127,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
     } if (rf & 2) {
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
-    } }, decls: 4, vars: 1, consts: [[1, "video-container"], ["userWindow", ""], ["class", "controller-button", 3, "click", 4, "ngIf"], [1, "controller-button", 3, "click"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 4, vars: 1, consts: [[1, "video-container"], ["userWindow", ""], ["class", "controller-button", 4, "ngIf"], [1, "controller-button"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", null, 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, AppComponent_div_3_Template, 1, 0, "div", 2);
@@ -232,33 +226,20 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "UserVideoService", function() { return UserVideoService; });
-/* harmony import */ var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! tslib */ "mrSG");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
-
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
 
 
 
 class UserVideoService {
-    constructor() {
-        this.sources = [];
-        this.currentSource = 0;
-        this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
-        this.currentFeed = this.replayVideo.asObservable();
-        this.enumerateVideoDevices();
-    }
-    updateFeed() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const { deviceId } = this.sources[this.currentSource];
-            this.replayVideo.next(yield navigator.mediaDevices.getUserMedia({
-                video: {
-                    deviceId,
-                },
-                audio: {
-                    echoCancellation: true,
-                },
-            }));
-        });
+    constructor() { }
+    getFeed() {
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: {
+                echoCancellation: true,
+            },
+        }));
     }
     getUserScreen() {
         const displayMediaOptions = {
@@ -268,7 +249,7 @@ class UserVideoService {
             audio: false,
         };
         const md = navigator.mediaDevices;
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(md.getDisplayMedia(displayMediaOptions));
     }
     createPeerConnection() {
         const configuration = {
@@ -280,29 +261,11 @@ class UserVideoService {
         };
         return new RTCPeerConnection(configuration);
     }
-    nextSource() {
-        if (this.currentSource >= this.sources.length - 1) {
-            this.currentSource = 0;
-        }
-        else {
-            this.currentSource++;
-        }
-        this.updateFeed();
-    }
-    enumerateVideoDevices() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const devices = yield navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter((device) => device.kind === "videoinput");
-            this.sources = videoDevices;
-            this.currentSource = 0;
-            this.updateFeed();
-        });
-    }
 }
 UserVideoService.ɵfac = function UserVideoService_Factory(t) { return new (t || UserVideoService)(); };
-UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
-/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](UserVideoService, [{
-        type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"],
+UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: UserVideoService, factory: UserVideoService.ɵfac, providedIn: "root" });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: "root",
             }]
@@ -363,7 +326,7 @@ class SocketServiceService {
                 streams.getTracks().forEach((track) => {
                     connection.peerConnection.addTrack(track, streams);
                 });
-                this.userVideoService.currentFeed.subscribe((f) => {
+                this.userVideoService.getFeed().subscribe((f) => {
                     const tracks = f.getTracks();
                     const senders = connection.peerConnection.getSenders();
                     senders.forEach((s) => {

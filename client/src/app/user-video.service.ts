@@ -5,22 +5,12 @@ import { from, Observable, ReplaySubject } from "rxjs";
   providedIn: "root",
 })
 export class UserVideoService {
-  public sources: MediaDeviceInfo[] = [];
-  public currentSource: number = 0;
-  public replayVideo = new ReplaySubject<MediaStream>();
-  public currentFeed = this.replayVideo.asObservable();
+  constructor() {}
 
-  constructor() {
-    this.enumerateVideoDevices();
-  }
-
-  public async updateFeed() {
-    const { deviceId } = this.sources[this.currentSource];
-    this.replayVideo.next(
-      await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId,
-        },
+  public getFeed() {
+    return from(
+      navigator.mediaDevices.getUserMedia({
+        video: true,
         audio: {
           echoCancellation: true,
         },
@@ -49,24 +39,5 @@ export class UserVideoService {
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     };
     return new RTCPeerConnection(configuration);
-  }
-
-  public nextSource() {
-    if (this.currentSource >= this.sources.length - 1) {
-      this.currentSource = 0;
-    } else {
-      this.currentSource++;
-    }
-    this.updateFeed();
-  }
-
-  private async enumerateVideoDevices() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    const videoDevices = devices.filter(
-      (device) => device.kind === "videoinput"
-    );
-    this.sources = videoDevices;
-    this.currentSource = 0;
-    this.updateFeed();
   }
 }

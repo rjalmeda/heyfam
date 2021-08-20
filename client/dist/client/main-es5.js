@@ -108,19 +108,7 @@
 
       function AppComponent_div_3_Template(rf, ctx) {
         if (rf & 1) {
-          var _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 3);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function AppComponent_div_3_Template_div_click_0_listener() {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r3);
-
-            var ctx_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-
-            return ctx_r2.nextSource();
-          });
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "div", 3);
         }
       }
 
@@ -140,7 +128,7 @@
           this.socketService.connections.subscribe(function (d) {
             _this.connections = d;
           });
-          this.userVideoService.currentFeed.subscribe(function (cam) {
+          this.userVideoService.getFeed().subscribe(function (cam) {
             _this.userCam = cam;
 
             _this.playStream(_this.userWindow, cam);
@@ -186,11 +174,6 @@
             if (connection) {} else {}
           }
         }, {
-          key: "nextSource",
-          value: function nextSource() {
-            this.userVideoService.nextSource();
-          }
-        }, {
           key: "playStream",
           value: function playStream(elRef, stream) {
             var videoWindow = elRef.nativeElement;
@@ -229,7 +212,7 @@
         },
         decls: 4,
         vars: 1,
-        consts: [[1, "video-container"], ["userWindow", ""], ["class", "controller-button", 3, "click", 4, "ngIf"], [1, "controller-button", 3, "click"]],
+        consts: [[1, "video-container"], ["userWindow", ""], ["class", "controller-button", 4, "ngIf"], [1, "controller-button"]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
@@ -410,65 +393,29 @@
       /* harmony import */
 
 
-      var tslib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
-      /*! tslib */
-      "mrSG");
-      /* harmony import */
-
-
-      var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
+      var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(
       /*! @angular/core */
       "fXoL");
       /* harmony import */
 
 
-      var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
+      var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(
       /*! rxjs */
       "qCKp");
 
       var UserVideoService = /*#__PURE__*/function () {
         function UserVideoService() {
           _classCallCheck(this, UserVideoService);
-
-          this.sources = [];
-          this.currentSource = 0;
-          this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
-          this.currentFeed = this.replayVideo.asObservable();
-          this.enumerateVideoDevices();
         }
 
         _createClass(UserVideoService, [{
-          key: "updateFeed",
-          value: function updateFeed() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-              var deviceId;
-              return regeneratorRuntime.wrap(function _callee$(_context) {
-                while (1) {
-                  switch (_context.prev = _context.next) {
-                    case 0:
-                      deviceId = this.sources[this.currentSource].deviceId;
-                      _context.t0 = this.replayVideo;
-                      _context.next = 4;
-                      return navigator.mediaDevices.getUserMedia({
-                        video: {
-                          deviceId: deviceId
-                        },
-                        audio: {
-                          echoCancellation: true
-                        }
-                      });
-
-                    case 4:
-                      _context.t1 = _context.sent;
-
-                      _context.t0.next.call(_context.t0, _context.t1);
-
-                    case 6:
-                    case "end":
-                      return _context.stop();
-                  }
-                }
-              }, _callee, this);
+          key: "getFeed",
+          value: function getFeed() {
+            return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(navigator.mediaDevices.getUserMedia({
+              video: true,
+              audio: {
+                echoCancellation: true
+              }
             }));
           }
         }, {
@@ -481,7 +428,7 @@
               audio: false
             };
             var md = navigator.mediaDevices;
-            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(md.getDisplayMedia(displayMediaOptions));
+            return Object(rxjs__WEBPACK_IMPORTED_MODULE_1__["from"])(md.getDisplayMedia(displayMediaOptions));
           }
         }, {
           key: "createPeerConnection",
@@ -497,46 +444,6 @@
             };
             return new RTCPeerConnection(configuration);
           }
-        }, {
-          key: "nextSource",
-          value: function nextSource() {
-            if (this.currentSource >= this.sources.length - 1) {
-              this.currentSource = 0;
-            } else {
-              this.currentSource++;
-            }
-
-            this.updateFeed();
-          }
-        }, {
-          key: "enumerateVideoDevices",
-          value: function enumerateVideoDevices() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-              var devices, videoDevices;
-              return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                while (1) {
-                  switch (_context2.prev = _context2.next) {
-                    case 0:
-                      _context2.next = 2;
-                      return navigator.mediaDevices.enumerateDevices();
-
-                    case 2:
-                      devices = _context2.sent;
-                      videoDevices = devices.filter(function (device) {
-                        return device.kind === "videoinput";
-                      });
-                      this.sources = videoDevices;
-                      this.currentSource = 0;
-                      this.updateFeed();
-
-                    case 7:
-                    case "end":
-                      return _context2.stop();
-                  }
-                }
-              }, _callee2, this);
-            }));
-          }
         }]);
 
         return UserVideoService;
@@ -546,7 +453,7 @@
         return new (t || UserVideoService)();
       };
 
-      UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({
+      UserVideoService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({
         token: UserVideoService,
         factory: UserVideoService.ɵfac,
         providedIn: "root"
@@ -554,8 +461,8 @@
       /*@__PURE__*/
 
       (function () {
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵsetClassMetadata"](UserVideoService, [{
-          type: _angular_core__WEBPACK_IMPORTED_MODULE_1__["Injectable"],
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](UserVideoService, [{
+          type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
           args: [{
             providedIn: "root"
           }]
@@ -646,25 +553,25 @@
 
             this.socket.on("sessionId", function (data) {});
             this.socket.on("offer", function (from, offer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                 var _this5 = this;
 
                 var connection, streams, answer;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
-                    switch (_context3.prev = _context3.next) {
+                    switch (_context.prev = _context.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
                         });
 
                         if (!connection) {
-                          _context3.next = 17;
+                          _context.next = 17;
                           break;
                         }
 
                         connection.peerConnection = this.userVideoService.createPeerConnection();
-                        _context3.next = 5;
+                        _context.next = 5;
                         return navigator.mediaDevices.getUserMedia({
                           video: true,
                           audio: {
@@ -673,11 +580,11 @@
                         });
 
                       case 5:
-                        streams = _context3.sent;
+                        streams = _context.sent;
                         streams.getTracks().forEach(function (track) {
                           connection.peerConnection.addTrack(track, streams);
                         });
-                        this.userVideoService.currentFeed.subscribe(function (f) {
+                        this.userVideoService.getFeed().subscribe(function (f) {
                           var tracks = f.getTracks();
                           var senders = connection.peerConnection.getSenders();
                           senders.forEach(function (s) {
@@ -700,12 +607,12 @@
                         //   connection.stream.addTrack(event.track);
                         // };
 
-                        _context3.next = 13;
+                        _context.next = 13;
                         return connection.peerConnection.createAnswer();
 
                       case 13:
-                        answer = _context3.sent;
-                        _context3.next = 16;
+                        answer = _context.sent;
+                        _context.next = 16;
                         return connection.peerConnection.setLocalDescription(answer);
 
                       case 16:
@@ -713,18 +620,18 @@
 
                       case 17:
                       case "end":
-                        return _context3.stop();
+                        return _context.stop();
                     }
                   }
-                }, _callee3, this);
+                }, _callee, this);
               }));
             });
             this.socket.on("answer", function (from, answer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
                 var connection, remoteDesc;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
                   while (1) {
-                    switch (_context4.prev = _context4.next) {
+                    switch (_context2.prev = _context2.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
@@ -733,51 +640,51 @@
                         //   connection.stream.addTrack(event.track);
                         // };
 
-                        _context4.next = 4;
+                        _context2.next = 4;
                         return connection.peerConnection.setRemoteDescription(remoteDesc);
 
                       case 4:
                       case "end":
-                        return _context4.stop();
+                        return _context2.stop();
                     }
                   }
-                }, _callee4, this);
+                }, _callee2, this);
               }));
             });
             this.socket.on("iceCandidate", function (from, iceCandidate) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
                 var connection;
-                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
                   while (1) {
-                    switch (_context5.prev = _context5.next) {
+                    switch (_context3.prev = _context3.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
                         });
 
                         if (!iceCandidate) {
-                          _context5.next = 9;
+                          _context3.next = 9;
                           break;
                         }
 
-                        _context5.prev = 2;
-                        _context5.next = 5;
+                        _context3.prev = 2;
+                        _context3.next = 5;
                         return connection.peerConnection.addIceCandidate(iceCandidate);
 
                       case 5:
-                        _context5.next = 9;
+                        _context3.next = 9;
                         break;
 
                       case 7:
-                        _context5.prev = 7;
-                        _context5.t0 = _context5["catch"](2);
+                        _context3.prev = 7;
+                        _context3.t0 = _context3["catch"](2);
 
                       case 9:
                       case "end":
-                        return _context5.stop();
+                        return _context3.stop();
                     }
                   }
-                }, _callee5, this, [[2, 7]]);
+                }, _callee3, this, [[2, 7]]);
               }));
             });
             this.socket.on("allStreamers", function (data) {
@@ -785,16 +692,16 @@
                 return session.sessionId !== _this4.socket.id;
               });
               data.forEach(function (d) {
-                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                   var _this6 = this;
 
                   var streams, offer;
-                  return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                  return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
-                      switch (_context6.prev = _context6.next) {
+                      switch (_context4.prev = _context4.next) {
                         case 0:
                           d.peerConnection = this.userVideoService.createPeerConnection();
-                          _context6.next = 3;
+                          _context4.next = 3;
                           return navigator.mediaDevices.getUserMedia({
                             video: true,
                             audio: {
@@ -803,7 +710,7 @@
                           });
 
                         case 3:
-                          streams = _context6.sent;
+                          streams = _context4.sent;
                           streams.getTracks().forEach(function (track) {
                             d.peerConnection.addTrack(track, streams);
                           });
@@ -816,12 +723,12 @@
                             }
                           };
 
-                          _context6.next = 9;
+                          _context4.next = 9;
                           return d.peerConnection.createOffer();
 
                         case 9:
-                          offer = _context6.sent;
-                          _context6.next = 12;
+                          offer = _context4.sent;
+                          _context4.next = 12;
                           return d.peerConnection.setLocalDescription(offer);
 
                         case 12:
@@ -829,10 +736,10 @@
 
                         case 13:
                         case "end":
-                          return _context6.stop();
+                          return _context4.stop();
                       }
                     }
-                  }, _callee6, this);
+                  }, _callee4, this);
                 }));
               });
               _this4.allUsers = data; // this.allUsers.forEach((u) => {

@@ -36,7 +36,7 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.currentFeed.subscribe((cam) => {
+    this.userVideoService.getFeed().subscribe((cam) => {
       this.userCam = cam;
       this.playStream(this.userWindow, cam);
     });
@@ -74,10 +74,6 @@ export class AppComponent {
     if (connection) {
     } else {
     }
-  }
-
-  public nextSource(): void {
-    this.userVideoService.nextSource();
   }
 
   private playStream(elRef: ElementRef, stream: any): void {
