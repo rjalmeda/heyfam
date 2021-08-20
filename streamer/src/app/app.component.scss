@@ -1,0 +1,36 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+.grid-wrapper {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+
+    .main-window {
+        grid-column: 1 / 4;
+        grid-row: 1 / 4;
+        background: grey;
+        min-height: 20px;
+        min-width: 20px;
+    }
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    object-fit: cover;
+}
+
+html, body, app-root {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    }
