@@ -398,6 +398,9 @@
           this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
           this.currentFeed = this.replayVideo.asObservable();
           this.enumerateVideoDevices();
+          navigator.mediaDevices.getUserMedia({
+            video: true
+          });
         }
 
         _createClass(UserVideoService, [{
@@ -486,7 +489,7 @@
                     case 2:
                       devices = _context2.sent;
                       videoDevices = devices.filter(function (device) {
-                        return !device.kind.toLowerCase().includes("audio");
+                        return device.kind.toLowerCase().includes("videoinput");
                       });
                       this.sources = videoDevices;
                       this.currentSource = 0;

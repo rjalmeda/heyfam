@@ -227,6 +227,7 @@ class UserVideoService {
         this.replayVideo = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
         this.currentFeed = this.replayVideo.asObservable();
         this.enumerateVideoDevices();
+        navigator.mediaDevices.getUserMedia({ video: true });
     }
     updateFeed() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
@@ -273,7 +274,7 @@ class UserVideoService {
     enumerateVideoDevices() {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             const devices = yield navigator.mediaDevices.enumerateDevices();
-            const videoDevices = devices.filter((device) => !device.kind.toLowerCase().includes("audio"));
+            const videoDevices = devices.filter((device) => device.kind.toLowerCase().includes("videoinput"));
             this.sources = videoDevices;
             this.currentSource = 0;
             this.updateFeed();
