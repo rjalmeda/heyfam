@@ -114,12 +114,10 @@
           this.socketService.connections.subscribe(function (d) {
             _this.connections = d;
           });
-          this.userVideoService.currentFeed.subscribe(function () {
-            _this.userVideoService.getFeed().subscribe(function (f) {
-              _this.sources = _this.userVideoService.sources;
+          this.userVideoService.currentFeed.subscribe(function (f) {
+            _this.sources = _this.userVideoService.sources;
 
-              _this.playStream(_this.userWindow, f);
-            });
+            _this.playStream(_this.userWindow, f);
           });
         }
 
@@ -399,21 +397,39 @@
         _createClass(UserVideoService, [{
           key: "updateFeed",
           value: function updateFeed() {
-            this.replayVideo.next(this.currentSource);
-          }
-        }, {
-          key: "getFeed",
-          value: function getFeed() {
-            var deviceId = this.sources[this.currentSource].deviceId;
-            return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(navigator.mediaDevices.getUserMedia({
-              video: {
-                deviceId: deviceId
-              },
-              audio: {
-                echoCancellation: true
-              }
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+              var deviceId, media;
+              return regeneratorRuntime.wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      deviceId = this.sources[this.currentSource].deviceId;
+                      _context.next = 3;
+                      return navigator.mediaDevices.getUserMedia({
+                        video: {
+                          deviceId: deviceId
+                        },
+                        audio: {
+                          echoCancellation: true
+                        }
+                      });
+
+                    case 3:
+                      media = _context.sent;
+                      this.media = media;
+                      this.replayVideo.next(media);
+
+                    case 6:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee, this);
             }));
           }
+        }, {
+          key: "getStream",
+          value: function getStream() {}
         }, {
           key: "getUserScreen",
           value: function getUserScreen() {
@@ -454,24 +470,24 @@
         }, {
           key: "enumerateVideoDevices",
           value: function enumerateVideoDevices() {
-            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+            return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
               var devices, videoDevices;
-              return regeneratorRuntime.wrap(function _callee$(_context) {
+              return regeneratorRuntime.wrap(function _callee2$(_context2) {
                 while (1) {
-                  switch (_context.prev = _context.next) {
+                  switch (_context2.prev = _context2.next) {
                     case 0:
-                      _context.next = 2;
+                      _context2.next = 2;
                       return navigator.mediaDevices.getUserMedia({
                         video: true,
                         audio: true
                       });
 
                     case 2:
-                      _context.next = 4;
+                      _context2.next = 4;
                       return navigator.mediaDevices.enumerateDevices();
 
                     case 4:
-                      devices = _context.sent;
+                      devices = _context2.sent;
                       videoDevices = devices.filter(function (device) {
                         return !device.kind.toLowerCase().includes("audio");
                       });
@@ -481,10 +497,10 @@
 
                     case 9:
                     case "end":
-                      return _context.stop();
+                      return _context2.stop();
                   }
                 }
-              }, _callee, this);
+              }, _callee2, this);
             }));
           }
         }]);
@@ -596,47 +612,41 @@
 
             this.socket.on("sessionId", function (data) {});
             this.socket.on("offer", function (from, offer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
                 var _this4 = this;
 
-                var connection, streams, answer;
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                var connection, answer;
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
                   while (1) {
-                    switch (_context2.prev = _context2.next) {
+                    switch (_context3.prev = _context3.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
                         });
 
                         if (!connection) {
-                          _context2.next = 17;
+                          _context3.next = 13;
                           break;
                         }
 
-                        connection.peerConnection = this.userVideoService.createPeerConnection();
-                        _context2.next = 5;
-                        return navigator.mediaDevices.getUserMedia({
-                          video: true,
-                          audio: {
-                            echoCancellation: true
-                          }
-                        });
+                        connection.peerConnection = this.userVideoService.createPeerConnection(); // const streams = await navigator.mediaDevices.getUserMedia({
+                        //   video: true,
+                        //   audio: {
+                        //     echoCancellation: true,
+                        //   },
+                        // });
+                        // streams.getTracks().forEach((track) => {
+                        //   connection.peerConnection.addTrack(track, streams);
+                        // });
 
-                      case 5:
-                        streams = _context2.sent;
-                        streams.getTracks().forEach(function (track) {
-                          connection.peerConnection.addTrack(track, streams);
-                        });
-                        this.userVideoService.currentFeed.subscribe(function () {
-                          _this4.userVideoService.getFeed().subscribe(function (f) {
-                            var tracks = f.getTracks();
-                            var senders = connection.peerConnection.getSenders();
-                            senders.forEach(function (s) {
-                              var track = tracks.find(function (t) {
-                                return t.kind === s.track.kind;
-                              });
-                              s.replaceTrack(track);
+                        this.userVideoService.currentFeed.subscribe(function (f) {
+                          var tracks = f.getTracks();
+                          var senders = connection.peerConnection.getSenders();
+                          senders.forEach(function (s) {
+                            var track = tracks.find(function (t) {
+                              return t.kind === s.track.kind;
                             });
+                            s.replaceTrack(track);
                           });
                         });
 
@@ -652,31 +662,31 @@
                         //   connection.stream.addTrack(event.track);
                         // };
 
-                        _context2.next = 13;
+                        _context3.next = 9;
                         return connection.peerConnection.createAnswer();
 
-                      case 13:
-                        answer = _context2.sent;
-                        _context2.next = 16;
+                      case 9:
+                        answer = _context3.sent;
+                        _context3.next = 12;
                         return connection.peerConnection.setLocalDescription(answer);
 
-                      case 16:
+                      case 12:
                         this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
 
-                      case 17:
+                      case 13:
                       case "end":
-                        return _context2.stop();
+                        return _context3.stop();
                     }
                   }
-                }, _callee2, this);
+                }, _callee3, this);
               }));
             });
             this.socket.on("answer", function (from, answer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                 var connection, remoteDesc;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
                   while (1) {
-                    switch (_context3.prev = _context3.next) {
+                    switch (_context4.prev = _context4.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
@@ -685,51 +695,51 @@
                         //   connection.stream.addTrack(event.track);
                         // };
 
-                        _context3.next = 4;
+                        _context4.next = 4;
                         return connection.peerConnection.setRemoteDescription(remoteDesc);
 
                       case 4:
                       case "end":
-                        return _context3.stop();
+                        return _context4.stop();
                     }
                   }
-                }, _callee3, this);
+                }, _callee4, this);
               }));
             });
             this.socket.on("iceCandidate", function (from, iceCandidate) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
                 var connection;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
                   while (1) {
-                    switch (_context4.prev = _context4.next) {
+                    switch (_context5.prev = _context5.next) {
                       case 0:
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
                         });
 
                         if (!iceCandidate) {
-                          _context4.next = 9;
+                          _context5.next = 9;
                           break;
                         }
 
-                        _context4.prev = 2;
-                        _context4.next = 5;
+                        _context5.prev = 2;
+                        _context5.next = 5;
                         return connection.peerConnection.addIceCandidate(iceCandidate);
 
                       case 5:
-                        _context4.next = 9;
+                        _context5.next = 9;
                         break;
 
                       case 7:
-                        _context4.prev = 7;
-                        _context4.t0 = _context4["catch"](2);
+                        _context5.prev = 7;
+                        _context5.t0 = _context5["catch"](2);
 
                       case 9:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
                   }
-                }, _callee4, this, [[2, 7]]);
+                }, _callee5, this, [[2, 7]]);
               }));
             });
             this.socket.on("allStreamers", function (data) {
@@ -737,27 +747,24 @@
                 return session.sessionId !== _this3.socket.id;
               });
               data.forEach(function (d) {
-                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee6() {
                   var _this5 = this;
 
-                  var streams, offer;
-                  return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                  var offer;
+                  return regeneratorRuntime.wrap(function _callee6$(_context6) {
                     while (1) {
-                      switch (_context5.prev = _context5.next) {
+                      switch (_context6.prev = _context6.next) {
                         case 0:
                           d.peerConnection = this.userVideoService.createPeerConnection();
-                          _context5.next = 3;
-                          return navigator.mediaDevices.getUserMedia({
-                            video: true,
-                            audio: {
-                              echoCancellation: true
-                            }
-                          });
-
-                        case 3:
-                          streams = _context5.sent;
-                          streams.getTracks().forEach(function (track) {
-                            d.peerConnection.addTrack(track, streams);
+                          this.userVideoService.currentFeed.subscribe(function (f) {
+                            var tracks = f.getTracks();
+                            var senders = d.peerConnection.getSenders();
+                            senders.forEach(function (s) {
+                              var track = tracks.find(function (t) {
+                                return t.kind === s.track.kind;
+                              });
+                              s.replaceTrack(track);
+                            });
                           });
 
                           d.peerConnection.onconnectionstatechange = function (event) {};
@@ -768,23 +775,23 @@
                             }
                           };
 
-                          _context5.next = 9;
+                          _context6.next = 6;
                           return d.peerConnection.createOffer();
 
-                        case 9:
-                          offer = _context5.sent;
-                          _context5.next = 12;
+                        case 6:
+                          offer = _context6.sent;
+                          _context6.next = 9;
                           return d.peerConnection.setLocalDescription(offer);
 
-                        case 12:
+                        case 9:
                           this.socket.emit("offer", d.sessionId, this.socket.id, offer);
 
-                        case 13:
+                        case 10:
                         case "end":
-                          return _context5.stop();
+                          return _context6.stop();
                       }
                     }
-                  }, _callee5, this);
+                  }, _callee6, this);
                 }));
               });
               _this3.allUsers = data; // this.allUsers.forEach((u) => {

@@ -15,28 +15,27 @@ export class UserVideoService {
   public currentSource: number = 0;
   public replayVideo = new ReplaySubject<any>();
   public currentFeed = this.replayVideo.asObservable();
+  private media: MediaStream;
 
   constructor() {
     this.enumerateVideoDevices();
   }
 
-  public updateFeed() {
-    this.replayVideo.next(this.currentSource);
+  public async updateFeed() {
+    const { deviceId } = this.sources[this.currentSource];
+    const media = await navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId,
+      },
+      audio: {
+        echoCancellation: true,
+      },
+    });
+    this.media = media;
+    this.replayVideo.next(media);
   }
 
-  public getFeed() {
-    const { deviceId } = this.sources[this.currentSource];
-    return from(
-      navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId,
-        },
-        audio: {
-          echoCancellation: true,
-        },
-      })
-    );
-  }
+  public getStream() {}
 
   public getUserScreen() {
     const displayMediaOptions = {

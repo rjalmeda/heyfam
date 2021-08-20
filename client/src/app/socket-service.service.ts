@@ -39,24 +39,22 @@ export class SocketServiceService {
         connection.peerConnection =
           this.userVideoService.createPeerConnection();
 
-        const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: {
-            echoCancellation: true,
-          },
-        });
-        streams.getTracks().forEach((track) => {
-          connection.peerConnection.addTrack(track, streams);
-        });
+        // const streams = await navigator.mediaDevices.getUserMedia({
+        //   video: true,
+        //   audio: {
+        //     echoCancellation: true,
+        //   },
+        // });
+        // streams.getTracks().forEach((track) => {
+        //   connection.peerConnection.addTrack(track, streams);
+        // });
 
-        this.userVideoService.currentFeed.subscribe(() => {
-          this.userVideoService.getFeed().subscribe((f) => {
-            const tracks = f.getTracks();
-            const senders = connection.peerConnection.getSenders();
-            senders.forEach((s) => {
-              const track = tracks.find((t) => t.kind === s.track.kind);
-              s.replaceTrack(track);
-            });
+        this.userVideoService.currentFeed.subscribe((f) => {
+          const tracks = f.getTracks();
+          const senders = connection.peerConnection.getSenders();
+          senders.forEach((s) => {
+            const track = tracks.find((t) => t.kind === s.track.kind);
+            s.replaceTrack(track);
           });
         });
 
@@ -112,15 +110,16 @@ export class SocketServiceService {
       data = data.filter((session) => session.sessionId !== this.socket.id);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
-        const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: {
-            echoCancellation: true,
-          },
+
+        this.userVideoService.currentFeed.subscribe((f) => {
+          const tracks = f.getTracks();
+          const senders = d.peerConnection.getSenders();
+          senders.forEach((s) => {
+            const track = tracks.find((t) => t.kind === s.track.kind);
+            s.replaceTrack(track);
+          });
         });
-        streams.getTracks().forEach((track) => {
-          d.peerConnection.addTrack(track, streams);
-        });
+
         d.peerConnection.onconnectionstatechange = (event) => {};
         d.peerConnection.onicecandidate = (event) => {
           if (event.candidate) {

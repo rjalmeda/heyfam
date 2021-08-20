@@ -68,11 +68,9 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.currentFeed.subscribe(() => {
-            this.userVideoService.getFeed().subscribe((f) => {
-                this.sources = this.userVideoService.sources;
-                this.playStream(this.userWindow, f);
-            });
+        this.userVideoService.currentFeed.subscribe((f) => {
+            this.sources = this.userVideoService.sources;
+            this.playStream(this.userWindow, f);
         });
     }
     get EnableVideoToggle() {
@@ -230,19 +228,21 @@ class UserVideoService {
         this.enumerateVideoDevices();
     }
     updateFeed() {
-        this.replayVideo.next(this.currentSource);
+        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+            const { deviceId } = this.sources[this.currentSource];
+            const media = yield navigator.mediaDevices.getUserMedia({
+                video: {
+                    deviceId,
+                },
+                audio: {
+                    echoCancellation: true,
+                },
+            });
+            this.media = media;
+            this.replayVideo.next(media);
+        });
     }
-    getFeed() {
-        const { deviceId } = this.sources[this.currentSource];
-        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(navigator.mediaDevices.getUserMedia({
-            video: {
-                deviceId,
-            },
-            audio: {
-                echoCancellation: true,
-            },
-        }));
-    }
+    getStream() { }
     getUserScreen() {
         const displayMediaOptions = {
             video: {
@@ -341,23 +341,21 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    connection.peerConnection.addTrack(track, streams);
-                });
-                this.userVideoService.currentFeed.subscribe(() => {
-                    this.userVideoService.getFeed().subscribe((f) => {
-                        const tracks = f.getTracks();
-                        const senders = connection.peerConnection.getSenders();
-                        senders.forEach((s) => {
-                            const track = tracks.find((t) => t.kind === s.track.kind);
-                            s.replaceTrack(track);
-                        });
+                // const streams = await navigator.mediaDevices.getUserMedia({
+                //   video: true,
+                //   audio: {
+                //     echoCancellation: true,
+                //   },
+                // });
+                // streams.getTracks().forEach((track) => {
+                //   connection.peerConnection.addTrack(track, streams);
+                // });
+                this.userVideoService.currentFeed.subscribe((f) => {
+                    const tracks = f.getTracks();
+                    const senders = connection.peerConnection.getSenders();
+                    senders.forEach((s) => {
+                        const track = tracks.find((t) => t.kind === s.track.kind);
+                        s.replaceTrack(track);
                     });
                 });
                 connection.peerConnection.onconnectionstatechange = (event) => { };
@@ -398,14 +396,13 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    d.peerConnection.addTrack(track, streams);
+                this.userVideoService.currentFeed.subscribe((f) => {
+                    const tracks = f.getTracks();
+                    const senders = d.peerConnection.getSenders();
+                    senders.forEach((s) => {
+                        const track = tracks.find((t) => t.kind === s.track.kind);
+                        s.replaceTrack(track);
+                    });
                 });
                 d.peerConnection.onconnectionstatechange = (event) => { };
                 d.peerConnection.onicecandidate = (event) => {
