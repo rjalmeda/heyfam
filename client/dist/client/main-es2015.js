@@ -68,10 +68,11 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.currentFeed.subscribe((cam) => {
-            cam = cam.clone();
-            this.sources = this.userVideoService.sources;
-            this.playStream(this.userWindow, cam);
+        this.userVideoService.currentFeed.subscribe(() => {
+            this.userVideoService.getFeed().subscribe((f) => {
+                this.sources = this.userVideoService.sources;
+                this.playStream(this.userWindow, f);
+            });
         });
     }
     get EnableVideoToggle() {
@@ -229,18 +230,18 @@ class UserVideoService {
         this.enumerateVideoDevices();
     }
     updateFeed() {
-        return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const { deviceId } = this.sources[this.currentSource];
-            const stream = yield navigator.mediaDevices.getUserMedia({
-                video: {
-                    deviceId,
-                },
-                audio: {
-                    echoCancellation: true,
-                },
-            });
-            this.replayVideo.next(stream);
-        });
+        this.replayVideo.next(this.currentSource);
+    }
+    getFeed() {
+        const { deviceId } = this.sources[this.currentSource];
+        return Object(rxjs__WEBPACK_IMPORTED_MODULE_2__["from"])(navigator.mediaDevices.getUserMedia({
+            video: {
+                deviceId,
+            },
+            audio: {
+                echoCancellation: true,
+            },
+        }));
     }
     getUserScreen() {
         const displayMediaOptions = {
@@ -349,13 +350,14 @@ class SocketServiceService {
                 streams.getTracks().forEach((track) => {
                     connection.peerConnection.addTrack(track, streams);
                 });
-                this.userVideoService.currentFeed.subscribe((f) => {
-                    f = f.clone();
-                    const tracks = f.getTracks();
-                    const senders = connection.peerConnection.getSenders();
-                    senders.forEach((s) => {
-                        const track = tracks.find((t) => t.kind === s.track.kind);
-                        s.replaceTrack(track);
+                this.userVideoService.currentFeed.subscribe(() => {
+                    this.userVideoService.getFeed().subscribe((f) => {
+                        const tracks = f.getTracks();
+                        const senders = connection.peerConnection.getSenders();
+                        senders.forEach((s) => {
+                            const track = tracks.find((t) => t.kind === s.track.kind);
+                            s.replaceTrack(track);
+                        });
                     });
                 });
                 connection.peerConnection.onconnectionstatechange = (event) => { };

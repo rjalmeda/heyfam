@@ -49,13 +49,14 @@ export class SocketServiceService {
           connection.peerConnection.addTrack(track, streams);
         });
 
-        this.userVideoService.currentFeed.subscribe((f) => {
-          f = f.clone();
-          const tracks = f.getTracks();
-          const senders = connection.peerConnection.getSenders();
-          senders.forEach((s) => {
-            const track = tracks.find((t) => t.kind === s.track.kind);
-            s.replaceTrack(track);
+        this.userVideoService.currentFeed.subscribe(() => {
+          this.userVideoService.getFeed().subscribe((f) => {
+            const tracks = f.getTracks();
+            const senders = connection.peerConnection.getSenders();
+            senders.forEach((s) => {
+              const track = tracks.find((t) => t.kind === s.track.kind);
+              s.replaceTrack(track);
+            });
           });
         });
 

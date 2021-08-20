@@ -33,10 +33,11 @@ export class AppComponent {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.currentFeed.subscribe((cam) => {
-      cam = cam.clone();
-      this.sources = this.userVideoService.sources;
-      this.playStream(this.userWindow, cam);
+    this.userVideoService.currentFeed.subscribe(() => {
+      this.userVideoService.getFeed().subscribe((f) => {
+        this.sources = this.userVideoService.sources;
+        this.playStream(this.userWindow, f);
+      });
     });
   }
 

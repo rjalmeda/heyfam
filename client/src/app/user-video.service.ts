@@ -13,24 +13,29 @@ import {
 export class UserVideoService {
   public sources: MediaDeviceInfo[] = [];
   public currentSource: number = 0;
-  public replayVideo = new ReplaySubject<MediaStream>();
+  public replayVideo = new ReplaySubject<any>();
   public currentFeed = this.replayVideo.asObservable();
 
   constructor() {
     this.enumerateVideoDevices();
   }
 
-  public async updateFeed() {
+  public updateFeed() {
+    this.replayVideo.next(this.currentSource);
+  }
+
+  public getFeed() {
     const { deviceId } = this.sources[this.currentSource];
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId,
-      },
-      audio: {
-        echoCancellation: true,
-      },
-    });
-    this.replayVideo.next(stream);
+    return from(
+      navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId,
+        },
+        audio: {
+          echoCancellation: true,
+        },
+      })
+    );
   }
 
   public getUserScreen() {
