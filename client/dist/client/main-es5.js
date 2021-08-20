@@ -97,35 +97,12 @@
       var _user_video_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(
       /*! ./user-video.service */
       "ghKE");
-      /* harmony import */
-
-
-      var _angular_common__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(
-      /*! @angular/common */
-      "ofXK");
 
       var _c0 = ["userWindow"];
-      var _c1 = ["videoStreams"];
-
-      function AppComponent_ng_container_0_Template(rf, ctx) {
-        if (rf & 1) {
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 3, 4);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
-        }
-
-        if (rf & 2) {
-          var c_r2 = ctx.$implicit;
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", c_r2.sessionId);
-        }
-      }
 
       var AppComponent = /*#__PURE__*/function () {
+        // @ViewChildren("videoStreams")
+        // private videoStreamsWindows: ElementRef[];
         function AppComponent(socketService, userVideoService) {
           var _this = this;
 
@@ -143,38 +120,33 @@
 
             _this.playStream(_this.userWindow, cam);
           });
-        }
+        } // public ngAfterViewChecked(): void {
+        //   this.videoStreamsWindows.forEach((s) => {
+        //     if (!s.nativeElement.srcObject) {
+        //       const c = this.connections.find(
+        //         (connection) => connection.sessionId === s.nativeElement.id
+        //       );
+        //       s.nativeElement.srcObject = c.stream;
+        //     }
+        //   });
+        // }
+
 
         _createClass(AppComponent, [{
-          key: "ngAfterViewChecked",
-          value: function ngAfterViewChecked() {
-            var _this2 = this;
-
-            this.videoStreamsWindows.forEach(function (s) {
-              if (!s.nativeElement.srcObject) {
-                var c = _this2.connections.find(function (connection) {
-                  return connection.sessionId === s.nativeElement.id;
-                });
-
-                s.nativeElement.srcObject = c.stream;
-              }
-            });
-          }
-        }, {
           key: "getVideoWindow",
           value: function getVideoWindow(id) {}
         }, {
           key: "enableScreenCapture",
           value: function enableScreenCapture() {
-            var _this3 = this;
+            var _this2 = this;
 
             this.screenCapEnabled = true;
             this.userVideoService.getUserScreen().subscribe(function (screen) {
               screen.getVideoTracks()[0].addEventListener("ended", function () {
-                _this3.enableUserCam();
+                _this2.enableUserCam();
               });
 
-              _this3.playStream(_this3.userWindow, screen);
+              _this2.playStream(_this2.userWindow, screen);
             });
           }
         }, {
@@ -212,32 +184,22 @@
         viewQuery: function AppComponent_Query(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]);
-
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c1, true);
           }
 
           if (rf & 2) {
             var _t;
 
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.videoStreamsWindows = _t);
           }
         },
-        decls: 3,
-        vars: 1,
-        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", 2, "border", "1px solid red"], ["userWindow", ""], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
+        decls: 2,
+        vars: 0,
+        consts: [["width", "100", "height", "100", 2, "border", "1px solid red"], ["userWindow", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
-
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
-          }
-
-          if (rf & 2) {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.connections);
+            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "video", 0, 1);
           }
         },
-        directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"]],
         styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LnNjc3MifQ== */"]
       });
       /*@__PURE__*/
@@ -263,10 +225,6 @@
               "static": false,
               read: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]
             }]
-          }],
-          videoStreamsWindows: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChildren"],
-            args: ["videoStreams"]
           }]
         });
       })();
@@ -548,8 +506,12 @@
         _createClass(SocketServiceService, [{
           key: "getSocket",
           value: function getSocket() {
+            var _this3 = this;
+
             this.socket = window["socketIo"]();
-            this.socket.on("connect", function () {});
+            this.socket.on("connect", function () {
+              _this3.socket.emit("registerClient", {});
+            });
           }
         }, {
           key: "setupListeners",
@@ -571,7 +533,7 @@
                         });
 
                         if (!connection) {
-                          _context.next = 17;
+                          _context.next = 16;
                           break;
                         }
 
@@ -598,24 +560,22 @@
                           }
                         };
 
-                        connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                        connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer)); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        //   connection.stream.addTrack(event.track);
+                        // };
 
-                        connection.peerConnection.ontrack = function (event) {
-                          connection.stream.addTrack(event.track);
-                        };
-
-                        _context.next = 13;
+                        _context.next = 12;
                         return connection.peerConnection.createAnswer();
 
-                      case 13:
+                      case 12:
                         answer = _context.sent;
-                        _context.next = 16;
+                        _context.next = 15;
                         return connection.peerConnection.setLocalDescription(answer);
 
-                      case 16:
+                      case 15:
                         this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
 
-                      case 17:
+                      case 16:
                       case "end":
                         return _context.stop();
                     }
@@ -633,16 +593,14 @@
                         connection = this.allUsers.find(function (u) {
                           return u.sessionId === from;
                         });
-                        remoteDesc = new RTCSessionDescription(answer);
+                        remoteDesc = new RTCSessionDescription(answer); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        //   connection.stream.addTrack(event.track);
+                        // };
 
-                        connection.peerConnection.ontrack = function (event) {
-                          connection.stream.addTrack(event.track);
-                        };
-
-                        _context2.next = 5;
+                        _context2.next = 4;
                         return connection.peerConnection.setRemoteDescription(remoteDesc);
 
-                      case 5:
+                      case 4:
                       case "end":
                         return _context2.stop();
                     }
@@ -686,7 +644,7 @@
                 }, _callee3, this, [[2, 7]]);
               }));
             });
-            this.socket.on("allUsers", function (data) {
+            this.socket.on("allStreamers", function (data) {
               data = data.filter(function (session) {
                 return session.sessionId !== _this4.socket.id;
               });
@@ -741,11 +699,9 @@
                   }, _callee4, this);
                 }));
               });
-              _this4.allUsers = data;
-
-              _this4.allUsers.forEach(function (u) {
-                u.stream = new MediaStream();
-              });
+              _this4.allUsers = data; // this.allUsers.forEach((u) => {
+              //   u.stream = new MediaStream();
+              // });
 
               _this4.connectionsSubject.next(data);
             });
@@ -760,9 +716,8 @@
 
               _this4.connectionsSubject.next(_this4.allUsers);
             });
-            this.socket.on("newUserConnected", function (connection) {
-              connection.stream = new MediaStream();
-
+            this.socket.on("newStreamerConnected", function (connection) {
+              // connection.stream = new MediaStream();
               _this4.allUsers.push(connection);
 
               _this4.connectionsSubject.next(_this4.allUsers);

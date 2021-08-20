@@ -59,16 +59,15 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const _c0 = ["userWindow"];
-const _c1 = ["videoStreams"];
+const _c0 = ["videoStreams"];
 function AppComponent_ng_container_0_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 3, 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
 } if (rf & 2) {
-    const c_r2 = ctx.$implicit;
+    const c_r1 = ctx.$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", c_r2.sessionId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", c_r1.sessionId);
 } }
 class AppComponent {
     constructor(socketService, userVideoService) {
@@ -79,10 +78,10 @@ class AppComponent {
         this.socketService.connections.subscribe((d) => {
             this.connections = d;
         });
-        this.userVideoService.getUserCam().subscribe((cam) => {
-            this.userCam = cam;
-            this.playStream(this.userWindow, cam);
-        });
+        // this.userVideoService.getUserCam().subscribe((cam) => {
+        //   this.userCam = cam;
+        //   this.playStream(this.userWindow, cam);
+        // });
     }
     ngAfterViewChecked() {
         this.videoStreamsWindows.forEach((s) => {
@@ -93,19 +92,19 @@ class AppComponent {
         });
     }
     getVideoWindow(id) { }
-    enableScreenCapture() {
-        this.screenCapEnabled = true;
-        this.userVideoService.getUserScreen().subscribe((screen) => {
-            screen.getVideoTracks()[0].addEventListener("ended", () => {
-                this.enableUserCam();
-            });
-            this.playStream(this.userWindow, screen);
-        });
-    }
-    enableUserCam() {
-        this.screenCapEnabled = false;
-        this.playStream(this.userWindow, this.userCam);
-    }
+    // public enableScreenCapture() {
+    //   this.screenCapEnabled = true;
+    //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+    //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+    //       this.enableUserCam();
+    //     });
+    //     this.playStream(this.userWindow, screen);
+    //   });
+    // }
+    // public enableUserCam(): void {
+    //   this.screenCapEnabled = false;
+    //   this.playStream(this.userWindow, this.userCam);
+    // }
     showConnections(connection) {
         if (connection) {
         }
@@ -122,15 +121,12 @@ class AppComponent {
 }
 AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_socket_service_service__WEBPACK_IMPORTED_MODULE_1__["SocketServiceService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_user_video_service__WEBPACK_IMPORTED_MODULE_2__["UserVideoService"])); };
 AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], viewQuery: function AppComponent_Query(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c1, true);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true);
     } if (rf & 2) {
         let _t;
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.videoStreamsWindows = _t);
-    } }, decls: 3, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", 2, "border", "1px solid red"], ["userWindow", ""], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, decls: 1, vars: 1, consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.connections);
     } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_3__["NgForOf"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LnNjc3MifQ== */"] });
@@ -141,10 +137,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
                 templateUrl: "./app.component.html",
                 styleUrls: ["./app.component.scss"],
             }]
-    }], function () { return [{ type: _socket_service_service__WEBPACK_IMPORTED_MODULE_1__["SocketServiceService"] }, { type: _user_video_service__WEBPACK_IMPORTED_MODULE_2__["UserVideoService"] }]; }, { userWindow: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"],
-            args: ["userWindow", { static: false, read: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"] }]
-        }], videoStreamsWindows: [{
+    }], function () { return [{ type: _socket_service_service__WEBPACK_IMPORTED_MODULE_1__["SocketServiceService"] }, { type: _user_video_service__WEBPACK_IMPORTED_MODULE_2__["UserVideoService"] }]; }, { videoStreamsWindows: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChildren"],
             args: ["videoStreams"]
         }] }); })();
@@ -302,7 +295,9 @@ class SocketServiceService {
     }
     getSocket() {
         this.socket = window["socketIo"]();
-        this.socket.on("connect", () => { });
+        this.socket.on("connect", () => {
+            this.socket.emit("registerStreamer", {});
+        });
     }
     setupListeners() {
         this.socket.on("sessionId", (data) => { });
@@ -354,7 +349,7 @@ class SocketServiceService {
                 }
             }
         }));
-        this.socket.on("allUsers", (data) => {
+        this.socket.on("allClients", (data) => {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
@@ -390,7 +385,7 @@ class SocketServiceService {
             }
             this.connectionsSubject.next(this.allUsers);
         });
-        this.socket.on("newUserConnected", (connection) => {
+        this.socket.on("newClientConnected", (connection) => {
             connection.stream = new MediaStream();
             this.allUsers.push(connection);
             this.connectionsSubject.next(this.allUsers);

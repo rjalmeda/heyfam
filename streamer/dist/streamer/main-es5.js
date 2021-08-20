@@ -104,24 +104,23 @@
       /*! @angular/common */
       "ofXK");
 
-      var _c0 = ["userWindow"];
-      var _c1 = ["videoStreams"];
+      var _c0 = ["videoStreams"];
 
       function AppComponent_ng_container_0_Template(rf, ctx) {
         if (rf & 1) {
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerStart"](0);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 3, 4);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementContainerEnd"]();
         }
 
         if (rf & 2) {
-          var c_r2 = ctx.$implicit;
+          var c_r1 = ctx.$implicit;
 
           _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
 
-          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", c_r2.sessionId);
+          _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("id", c_r1.sessionId);
         }
       }
 
@@ -137,12 +136,10 @@
           this.screenCapEnabled = false;
           this.socketService.connections.subscribe(function (d) {
             _this.connections = d;
-          });
-          this.userVideoService.getUserCam().subscribe(function (cam) {
-            _this.userCam = cam;
-
-            _this.playStream(_this.userWindow, cam);
-          });
+          }); // this.userVideoService.getUserCam().subscribe((cam) => {
+          //   this.userCam = cam;
+          //   this.playStream(this.userWindow, cam);
+          // });
         }
 
         _createClass(AppComponent, [{
@@ -162,27 +159,20 @@
           }
         }, {
           key: "getVideoWindow",
-          value: function getVideoWindow(id) {}
-        }, {
-          key: "enableScreenCapture",
-          value: function enableScreenCapture() {
-            var _this3 = this;
+          value: function getVideoWindow(id) {} // public enableScreenCapture() {
+          //   this.screenCapEnabled = true;
+          //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+          //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+          //       this.enableUserCam();
+          //     });
+          //     this.playStream(this.userWindow, screen);
+          //   });
+          // }
+          // public enableUserCam(): void {
+          //   this.screenCapEnabled = false;
+          //   this.playStream(this.userWindow, this.userCam);
+          // }
 
-            this.screenCapEnabled = true;
-            this.userVideoService.getUserScreen().subscribe(function (screen) {
-              screen.getVideoTracks()[0].addEventListener("ended", function () {
-                _this3.enableUserCam();
-              });
-
-              _this3.playStream(_this3.userWindow, screen);
-            });
-          }
-        }, {
-          key: "enableUserCam",
-          value: function enableUserCam() {
-            this.screenCapEnabled = false;
-            this.playStream(this.userWindow, this.userCam);
-          }
         }, {
           key: "showConnections",
           value: function showConnections(connection) {
@@ -211,26 +201,21 @@
         selectors: [["app-root"]],
         viewQuery: function AppComponent_Query(rf, ctx) {
           if (rf & 1) {
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]);
-
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c1, true);
+            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true);
           }
 
           if (rf & 2) {
             var _t;
 
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.userWindow = _t.first);
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.videoStreamsWindows = _t);
           }
         },
-        decls: 3,
+        decls: 1,
         vars: 1,
-        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", 2, "border", "1px solid red"], ["userWindow", ""], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
+        consts: [[4, "ngFor", "ngForOf"], ["width", "100", "height", "100", "autoplay", "", 2, "border", "1px solid blue", 3, "id"], ["videoStreams", ""]],
         template: function AppComponent_Template(rf, ctx) {
           if (rf & 1) {
             _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, AppComponent_ng_container_0_Template, 3, 1, "ng-container", 0);
-
-            _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](1, "video", 1, 2);
           }
 
           if (rf & 2) {
@@ -257,13 +242,6 @@
             type: _user_video_service__WEBPACK_IMPORTED_MODULE_2__["UserVideoService"]
           }];
         }, {
-          userWindow: [{
-            type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"],
-            args: ["userWindow", {
-              "static": false,
-              read: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ElementRef"]
-            }]
-          }],
           videoStreamsWindows: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChildren"],
             args: ["videoStreams"]
@@ -548,8 +526,12 @@
         _createClass(SocketServiceService, [{
           key: "getSocket",
           value: function getSocket() {
+            var _this3 = this;
+
             this.socket = window["socketIo"]();
-            this.socket.on("connect", function () {});
+            this.socket.on("connect", function () {
+              _this3.socket.emit("registerStreamer", {});
+            });
           }
         }, {
           key: "setupListeners",
@@ -686,7 +668,7 @@
                 }, _callee3, this, [[2, 7]]);
               }));
             });
-            this.socket.on("allUsers", function (data) {
+            this.socket.on("allClients", function (data) {
               data = data.filter(function (session) {
                 return session.sessionId !== _this4.socket.id;
               });
@@ -760,7 +742,7 @@
 
               _this4.connectionsSubject.next(_this4.allUsers);
             });
-            this.socket.on("newUserConnected", function (connection) {
+            this.socket.on("newClientConnected", function (connection) {
               connection.stream = new MediaStream();
 
               _this4.allUsers.push(connection);

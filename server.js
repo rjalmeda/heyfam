@@ -8,11 +8,13 @@ const connections = [];
 const clients = [];
 const streamers = [];
 
-app.use(express.static("./client/dist/client"))
+app.use('/client', express.static("./client/dist/client"));
 
-app.get('/', (req, res) => {
-    res.send("hello");
-});
+app.use(express.static("./streamer/dist/streamer"));
+
+// app.get('/', (req, res) => {
+//     res.send("hello");
+// });
 
 io.on('connection', socket => {
     console.log('A user has connected');
@@ -66,7 +68,8 @@ io.on('connection', socket => {
     })
 
     socket.emit('allUsers', connections);
-
+    socket.emit('allStreamers', streamers);
+    socket.emit('allClients', clients);
 })
 
 http.listen(port, () => {

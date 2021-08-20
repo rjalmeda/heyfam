@@ -25,7 +25,9 @@ export class SocketServiceService {
 
   getSocket() {
     this.socket = window["socketIo"]();
-    this.socket.on("connect", () => {});
+    this.socket.on("connect", () => {
+      this.socket.emit("registerStreamer", {});
+    });
   }
 
   setupListeners() {
@@ -94,7 +96,7 @@ export class SocketServiceService {
       }
     });
 
-    this.socket.on("allUsers", (data) => {
+    this.socket.on("allClients", (data) => {
       data = data.filter((session) => session.sessionId !== this.socket.id);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
@@ -137,7 +139,7 @@ export class SocketServiceService {
       this.connectionsSubject.next(this.allUsers);
     });
 
-    this.socket.on("newUserConnected", (connection) => {
+    this.socket.on("newClientConnected", (connection) => {
       connection.stream = new MediaStream();
       this.allUsers.push(connection);
       this.connectionsSubject.next(this.allUsers);

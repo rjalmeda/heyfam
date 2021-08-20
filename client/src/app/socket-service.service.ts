@@ -62,9 +62,9 @@ export class SocketServiceService {
         connection.peerConnection.setRemoteDescription(
           new RTCSessionDescription(offer)
         );
-        connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-          connection.stream.addTrack(event.track);
-        };
+        // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+        //   connection.stream.addTrack(event.track);
+        // };
         const answer = await connection.peerConnection.createAnswer();
         await connection.peerConnection.setLocalDescription(answer);
         this.socket.emit(
@@ -79,9 +79,9 @@ export class SocketServiceService {
     this.socket.on("answer", async (from, answer) => {
       const connection = this.allUsers.find((u) => u.sessionId === from);
       const remoteDesc = new RTCSessionDescription(answer);
-      connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-        connection.stream.addTrack(event.track);
-      };
+      // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+      //   connection.stream.addTrack(event.track);
+      // };
       await connection.peerConnection.setRemoteDescription(remoteDesc);
     });
 
@@ -125,9 +125,9 @@ export class SocketServiceService {
         this.socket.emit("offer", d.sessionId, this.socket.id, offer);
       });
       this.allUsers = data;
-      this.allUsers.forEach((u) => {
-        u.stream = new MediaStream();
-      });
+      // this.allUsers.forEach((u) => {
+      //   u.stream = new MediaStream();
+      // });
       this.connectionsSubject.next(data);
     });
 
@@ -140,7 +140,7 @@ export class SocketServiceService {
     });
 
     this.socket.on("newStreamerConnected", (connection) => {
-      connection.stream = new MediaStream();
+      // connection.stream = new MediaStream();
       this.allUsers.push(connection);
       this.connectionsSubject.next(this.allUsers);
     });
@@ -151,5 +151,4 @@ export interface IConnection {
   sessionId: string;
   name: string;
   peerConnection: RTCPeerConnection;
-  stream: MediaStream;
 }

@@ -19,8 +19,8 @@ export class AppComponent implements AfterViewChecked {
   public userCam: any;
   public screenCapEnabled = false;
 
-  @ViewChild("userWindow", { static: false, read: ElementRef })
-  private userWindow: ElementRef;
+  // @ViewChild("userWindow", { static: false, read: ElementRef })
+  // private userWindow: ElementRef;
 
   @ViewChildren("videoStreams")
   private videoStreamsWindows: ElementRef[];
@@ -32,10 +32,10 @@ export class AppComponent implements AfterViewChecked {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    this.userVideoService.getUserCam().subscribe((cam) => {
-      this.userCam = cam;
-      this.playStream(this.userWindow, cam);
-    });
+    // this.userVideoService.getUserCam().subscribe((cam) => {
+    //   this.userCam = cam;
+    //   this.playStream(this.userWindow, cam);
+    // });
   }
 
   public ngAfterViewChecked(): void {
@@ -51,20 +51,20 @@ export class AppComponent implements AfterViewChecked {
 
   getVideoWindow(id: string) {}
 
-  public enableScreenCapture() {
-    this.screenCapEnabled = true;
-    this.userVideoService.getUserScreen().subscribe((screen: any) => {
-      screen.getVideoTracks()[0].addEventListener("ended", () => {
-        this.enableUserCam();
-      });
-      this.playStream(this.userWindow, screen);
-    });
-  }
+  // public enableScreenCapture() {
+  //   this.screenCapEnabled = true;
+  //   this.userVideoService.getUserScreen().subscribe((screen: any) => {
+  //     screen.getVideoTracks()[0].addEventListener("ended", () => {
+  //       this.enableUserCam();
+  //     });
+  //     this.playStream(this.userWindow, screen);
+  //   });
+  // }
 
-  public enableUserCam(): void {
-    this.screenCapEnabled = false;
-    this.playStream(this.userWindow, this.userCam);
-  }
+  // public enableUserCam(): void {
+  //   this.screenCapEnabled = false;
+  //   this.playStream(this.userWindow, this.userCam);
+  // }
 
   public showConnections(connection?: any): void {
     if (connection) {

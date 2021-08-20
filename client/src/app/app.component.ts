@@ -14,7 +14,7 @@ import { UserVideoService } from "./user-video.service";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements AfterViewChecked {
+export class AppComponent {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
@@ -22,8 +22,8 @@ export class AppComponent implements AfterViewChecked {
   @ViewChild("userWindow", { static: false, read: ElementRef })
   private userWindow: ElementRef;
 
-  @ViewChildren("videoStreams")
-  private videoStreamsWindows: ElementRef[];
+  // @ViewChildren("videoStreams")
+  // private videoStreamsWindows: ElementRef[];
 
   constructor(
     private socketService: SocketServiceService,
@@ -38,16 +38,16 @@ export class AppComponent implements AfterViewChecked {
     });
   }
 
-  public ngAfterViewChecked(): void {
-    this.videoStreamsWindows.forEach((s) => {
-      if (!s.nativeElement.srcObject) {
-        const c = this.connections.find(
-          (connection) => connection.sessionId === s.nativeElement.id
-        );
-        s.nativeElement.srcObject = c.stream;
-      }
-    });
-  }
+  // public ngAfterViewChecked(): void {
+  //   this.videoStreamsWindows.forEach((s) => {
+  //     if (!s.nativeElement.srcObject) {
+  //       const c = this.connections.find(
+  //         (connection) => connection.sessionId === s.nativeElement.id
+  //       );
+  //       s.nativeElement.srcObject = c.stream;
+  //     }
+  //   });
+  // }
 
   getVideoWindow(id: string) {}
 
