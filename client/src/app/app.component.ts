@@ -20,6 +20,8 @@ export class AppComponent {
   public screenCapEnabled = false;
   public sources: MediaDeviceInfo[] = [];
   public streamUrl: string;
+  public name: string;
+  public message: string;
 
   public get EnableVideoToggle() {
     return this.sources.length > 1;
@@ -41,10 +43,10 @@ export class AppComponent {
     this.socketService.currentChannel.subscribe((channel) => {
       this.streamUrl = channel;
     });
-    this.userVideoService.getFeed().then((cam) => {
-      this.userCam = cam;
-      this.playStream(this.userWindow, cam);
-    });
+    // this.userVideoService.getFeed().then((cam) => {
+    //   this.userCam = cam;
+    //   this.playStream(this.userWindow, cam);
+    // });
   }
 
   // public ngAfterViewChecked(): void {
@@ -85,6 +87,13 @@ export class AppComponent {
     if (confirm("Update Current Channel")) {
       this.socketService.updateChannel(this.streamUrl);
     }
+  }
+
+  public sendMessage(): void {
+    this.socketService.sendMessage({
+      name: this.name,
+      message: this.message,
+    });
   }
 
   private playStream(elRef: ElementRef, stream: any): void {

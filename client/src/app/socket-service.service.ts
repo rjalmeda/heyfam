@@ -31,6 +31,12 @@ export class SocketServiceService {
     this.socket.emit("updateChannel", channel);
   }
 
+  sendMessage(message: IMessage) {
+    console.log("sending message");
+    console.log(message);
+    this.socket.emit("sendMessage", message);
+  }
+
   getSocket() {
     this.socket = window["socketIo"]();
     this.socket.on("connect", () => {
@@ -173,4 +179,9 @@ export interface IConnection {
   sessionId: string;
   name: string;
   peerConnection: RTCPeerConnection;
+}
+
+interface IMessage {
+  name: string;
+  message: string;
 }

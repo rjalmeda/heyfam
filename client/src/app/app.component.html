@@ -1,16 +1,21 @@
-<!-- <ng-container *ngFor="let c of connections">
-  <video #videoStreams width="100" height="100" autoplay style="border: 1px solid blue;" [id]="c.sessionId">
-  </video>
-</ng-container> -->
+<h2>Welcome to stream camera client</h2>
 
-<!-- <div class="video-container">
-  <video #userWindow>
-  </video>
-  <div *ngIf="EnableVideoToggle" class="controller-button">
+<mat-form-field appearance="fill" style="width: 90vw;">
+  <mat-label>Name</mat-label>
+  <input matInput type="text" [(ngModel)]="name">
+</mat-form-field>
+<br/>
 
-  </div>
-</div> -->
+<mat-form-field appearance="fill" style="width: 90vw;">
+  <mat-label>Current Channel</mat-label>
+  <input matInput type="text" [(ngModel)]="streamUrl">
+</mat-form-field>
+<br/>
+<button mat-raised-button (click)="updateStream()">Update Stream</button>
 
-<h1>Welcome to stream camera client</h1>
-
-<input style="width: 50%" type="text" [(ngModel)]="streamUrl"><button (click)="updateStream()">Update Stream</button>
+<mat-form-field appearance="fill" style="width: 90vw;">
+  <mat-label>Message</mat-label>
+  <input matInput type="text" [(ngModel)]="message">
+</mat-form-field>
+<br/>
+<button mat-raised-button (click)="sendMessage()">Send Message</button>

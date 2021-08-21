@@ -4,6 +4,7 @@ import * as io from "socket.io-client";
 import { ReplaySubject, Subject } from "rxjs";
 import { UserVideoService } from "./user-video.service";
 import { DomSanitizer, SafeResourceUrl } from "@angular/platform-browser";
+import { MatSnackBar } from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: "root",
@@ -22,7 +23,8 @@ export class SocketServiceService {
   constructor(
     private http: HttpClient,
     private userVideoService: UserVideoService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private snackbar: MatSnackBar
   ) {
     this.getSocket();
     this.setupListeners();
@@ -39,6 +41,15 @@ export class SocketServiceService {
     this.socket.on("currentChannel", (channel) => {
       const url = this.sanitizer.bypassSecurityTrustResourceUrl(channel);
       this.channelSubject.next(url);
+    });
+
+    this.socket.on("sendMessage", (message: IMessage) => {
+      console.log("message received");
+      this.snackbar.open(
+        `${message.name}${message.name ? " : " : ""}${message.message}`,
+        null,
+        { duration: 2000 }
+      );
     });
 
     this.socket.on("sessionId", (data) => {});
@@ -162,4 +173,9 @@ export interface IConnection {
   name: string;
   peerConnection: RTCPeerConnection;
   stream: MediaStream;
+}
+
+interface IMessage {
+  name: string;
+  message: string;
 }

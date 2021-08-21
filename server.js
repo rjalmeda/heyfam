@@ -49,9 +49,10 @@ io.on('connection', socket => {
 
     socket.broadcast.emit('newUserConnected', connection)
 
-    socket.on('updateName', name => {
-        connection.name = name;
-        socket.broadcast.emit('nameUpdated', connection)
+    socket.on('sendMessage',  (message) => {
+        console.log('message received');
+        console.log(message);
+        socket.broadcast.emit('sendMessage', message)
     })
 
     socket.on('disconnect', () => {
