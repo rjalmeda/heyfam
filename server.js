@@ -83,6 +83,7 @@ http.listen(port, () => {
 
 function checkUrl(url) {
     // sample Youtube url 'https://www.youtube.com/watch?v=SeW5Eh2U79c'
+    // sample Twitch url 'https://player.twitch.tv/?channel=cdprojektred&parent=herokuapp.com'
 
     // Check if youtube
     const lowerUrl = url.toLowerCase();
@@ -90,6 +91,17 @@ function checkUrl(url) {
         url = url.replace('watch?v=', 'embed/');
         const u = url.split('?');
         url = `${u[0]}?autoplay=1`
+    } else if (lowerUrl.includes('twitch')) {
+        const u = url.split('?');
+        const params = !!u[1] ? u[1].split('&') : [];
+        const parentIdx = params.findIndex(p => p.includes('parent'));
+        let parent = process.env.ENVIRONMENT === 'heroku' ? 'parent=herokuapp.com' : 'parent=localhost';
+        if (parentIdx > -1) {
+            params.splice(parentIdx, 1, parent);
+        } else {
+            params.push(parent);
+        }
+        url = `${u[0]}?${params.join('&')}`
     }
 
     return url;
