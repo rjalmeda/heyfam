@@ -29,6 +29,7 @@ io.on('connection', socket => {
     socket.emit('currentChannel', currentChannel)
 
     socket.on('updateChannel', channel => {
+        channel = checkUrl(channel);
         currentChannel = channel;
         socket.broadcast.emit('currentChannel', currentChannel)
     })
@@ -79,3 +80,17 @@ io.on('connection', socket => {
 http.listen(port, () => {
     console.log(`Now listening on port ${port}`)
 })
+
+function checkUrl(url) {
+    // sample Youtube url 'https://www.youtube.com/watch?v=SeW5Eh2U79c'
+
+    // Check if youtube
+    const lowerUrl = url.toLowerCase();
+    if (lowerUrl.includes('youtube')) {
+        url = url.replace('watch?v=', 'embed/');
+        const u = url.split('?');
+        url = `${u[0]}?autoplay=1`
+    }
+
+    return url;
+}
