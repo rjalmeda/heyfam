@@ -6,6 +6,7 @@ import {
   AfterViewChecked,
   SimpleChanges,
 } from "@angular/core";
+import { SafeResourceUrl } from "@angular/platform-browser";
 import { SocketServiceService, IConnection } from "./socket-service.service";
 import { UserVideoService } from "./user-video.service";
 
@@ -18,6 +19,7 @@ export class AppComponent implements AfterViewChecked {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
+  public currentChannel: string | SafeResourceUrl;
 
   // @ViewChild("userWindow", { static: false, read: ElementRef })
   // private userWindow: ElementRef;
@@ -32,10 +34,10 @@ export class AppComponent implements AfterViewChecked {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
     });
-    // this.userVideoService.getUserCam().subscribe((cam) => {
-    //   this.userCam = cam;
-    //   this.playStream(this.userWindow, cam);
-    // });
+
+    this.socketService.currentChannel.subscribe((channel) => {
+      this.currentChannel = channel;
+    });
   }
 
   public ngAfterViewChecked(): void {

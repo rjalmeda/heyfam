@@ -19,6 +19,8 @@ export class AppComponent {
   public userCam: any;
   public screenCapEnabled = false;
   public sources: MediaDeviceInfo[] = [];
+  public streamUrl: string;
+
   public get EnableVideoToggle() {
     return this.sources.length > 1;
   }
@@ -35,6 +37,9 @@ export class AppComponent {
   ) {
     this.socketService.connections.subscribe((d) => {
       this.connections = d;
+    });
+    this.socketService.currentChannel.subscribe((channel) => {
+      this.streamUrl = channel;
     });
     this.userVideoService.getFeed().then((cam) => {
       this.userCam = cam;
@@ -73,6 +78,12 @@ export class AppComponent {
   public showConnections(connection?: any): void {
     if (connection) {
     } else {
+    }
+  }
+
+  public updateStream(): void {
+    if (confirm("Update Current Channel")) {
+      this.socketService.updateChannel(this.streamUrl);
     }
   }
 

@@ -8,6 +8,8 @@ const connections = [];
 const clients = [];
 const streamers = [];
 
+let currentChannel = 'https://www.youtube.com/embed/NAbQimfaRyw?autoplay=1';
+
 app.use('/client', express.static("./client/dist/client"));
 
 app.use(express.static("./streamer/dist/streamer"));
@@ -23,6 +25,13 @@ io.on('connection', socket => {
     }
 
     let currentList;
+
+    socket.emit('currentChannel', currentChannel)
+
+    socket.on('updateChannel', channel => {
+        currentChannel = channel;
+        socket.broadcast.emit('currentChannel', currentChannel)
+    })
 
     socket.on('registerClient', () => {
         currentList = clients;

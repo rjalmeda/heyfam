@@ -1,5 +1,8 @@
 <div class="grid-wrapper">
   <div class="main-window">
+    <iframe [src]="currentChannel" frameborder="0" allowfullscreen allow="autoplay">
+
+    </iframe>
   </div>
   <video *ngFor="let c of connections" #videoStreams autoplay [id]="c.sessionId">
   </video>

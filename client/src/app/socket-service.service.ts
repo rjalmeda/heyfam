@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import * as io from "socket.io-client";
-import { Subject } from "rxjs";
+import { ReplaySubject, Subject } from "rxjs";
 import { UserVideoService } from "./user-video.service";
+import { DomSanitizer } from "@angular/platform-browser";
 
 @Injectable({
   providedIn: "root",
@@ -12,15 +13,22 @@ export class SocketServiceService {
   public allUsers: IConnection[];
   public connectionsSubject = new Subject<IConnection[]>();
   public connections = this.connectionsSubject.asObservable();
+  public channelSubject = new ReplaySubject<string>();
+  public currentChannel = this.channelSubject.asObservable();
 
   private socket: any;
 
   constructor(
     private http: HttpClient,
-    private userVideoService: UserVideoService
+    private userVideoService: UserVideoService,
+    private sanitizer: DomSanitizer
   ) {
     this.getSocket();
     this.setupListeners();
+  }
+
+  updateChannel(channel: string) {
+    this.socket.emit("updateChannel", channel);
   }
 
   getSocket() {
@@ -31,6 +39,10 @@ export class SocketServiceService {
   }
 
   setupListeners() {
+    this.socket.on("currentChannel", (channel) => {
+      this.channelSubject.next(channel);
+    });
+
     this.socket.on("sessionId", (data) => {});
 
     this.socket.on("offer", async (from, offer) => {

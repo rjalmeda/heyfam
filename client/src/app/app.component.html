@@ -3,11 +3,14 @@
   </video>
 </ng-container> -->
 
-<div class="video-container">
+<!-- <div class="video-container">
   <video #userWindow>
   </video>
   <div *ngIf="EnableVideoToggle" class="controller-button">
 
   </div>
-</div>
+</div> -->
 
+<h1>Welcome to stream camera client</h1>
+
+<input style="width: 50%" type="text" [(ngModel)]="streamUrl"><button (click)="updateStream()">Update Stream</button>
