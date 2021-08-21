@@ -39,8 +39,10 @@ export class SocketServiceService {
 
   setupListeners() {
     this.socket.on("currentChannel", (channel) => {
-      const url = this.sanitizer.bypassSecurityTrustResourceUrl(channel);
-      this.channelSubject.next(url);
+      if (!!channel) {
+        channel = this.sanitizer.bypassSecurityTrustResourceUrl(channel);
+      }
+      this.channelSubject.next(channel);
     });
 
     this.socket.on("sendMessage", (message: IMessage) => {

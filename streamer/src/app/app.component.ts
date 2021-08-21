@@ -19,7 +19,10 @@ export class AppComponent implements AfterViewChecked {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
-  public currentChannel: string | SafeResourceUrl;
+  public currentChannel: string | SafeResourceUrl = "";
+  public get channelEnabled() {
+    return !!this.currentChannel;
+  }
 
   // @ViewChild("userWindow", { static: false, read: ElementRef })
   // private userWindow: ElementRef;

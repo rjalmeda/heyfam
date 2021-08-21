@@ -1,9 +1,21 @@
-<div class="grid-wrapper">
-  <div class="main-window">
-    <iframe [src]="currentChannel" frameborder="0" allowfullscreen allow="autoplay">
-
+<div
+  class="grid-wrapper"
+  [class.stream-enabled]="channelEnabled"
+  [class.party-mode]="!channelEnabled"
+>
+  <div class="main-window" *ngIf="channelEnabled">
+    <iframe
+      [src]="currentChannel"
+      frameborder="0"
+      allowfullscreen
+      allow="autoplay"
+    >
     </iframe>
   </div>
-  <video *ngFor="let c of connections" #videoStreams autoplay [id]="c.sessionId">
-  </video>
+  <video
+    *ngFor="let c of connections"
+    #videoStreams
+    autoplay
+    [id]="c.sessionId"
+  ></video>
 </div>
