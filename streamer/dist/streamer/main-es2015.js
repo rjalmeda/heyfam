@@ -317,8 +317,7 @@ class SocketServiceService {
             this.channelSubject.next(url);
         });
         this.socket.on("sendMessage", (message) => {
-            console.log("message received");
-            this.snackbar.open(`${message.name}${message.name ? " : " : ""}${message.message}`, null, { duration: 2000 });
+            this.snackbar.open(`${message.name || "Anonymous"} : ${message.message}`, null, { duration: 2000 });
         });
         this.socket.on("sessionId", (data) => { });
         this.socket.on("offer", (from, offer) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
@@ -326,8 +325,10 @@ class SocketServiceService {
             if (connection) {
                 connection.peerConnection =
                     this.userVideoService.createPeerConnection();
+                const videoStreams = yield navigator.mediaDevices.enumerateDevices();
+                const isVideoAvailable = videoStreams.some((d) => d.kind === "videoinput");
                 const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
+                    video: isVideoAvailable,
                     audio: {
                         echoCancellation: true,
                     },
@@ -373,8 +374,10 @@ class SocketServiceService {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
+                const videoStreams = yield navigator.mediaDevices.enumerateDevices();
+                const isVideoAvailable = videoStreams.some((d) => d.kind === "videoinput");
                 const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
+                    video: isVideoAvailable,
                     audio: {
                         echoCancellation: true,
                     },

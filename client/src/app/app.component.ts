@@ -5,8 +5,13 @@ import {
   ElementRef,
   AfterViewChecked,
   SimpleChanges,
+  OnInit,
 } from "@angular/core";
-import { SocketServiceService, IConnection } from "./socket-service.service";
+import {
+  SocketServiceService,
+  IConnection,
+  IMessage,
+} from "./socket-service.service";
 import { UserVideoService } from "./user-video.service";
 
 @Component({
@@ -14,7 +19,7 @@ import { UserVideoService } from "./user-video.service";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
@@ -22,6 +27,7 @@ export class AppComponent {
   public streamUrl: string;
   public name: string;
   public message: string;
+  public messages: IMessage[] = [];
 
   public get EnableVideoToggle() {
     return this.sources.length > 1;
@@ -60,7 +66,9 @@ export class AppComponent {
   //   });
   // }
 
-  getVideoWindow(id: string) {}
+  public ngOnInit() {
+    this.messages = this.socketService.messages;
+  }
 
   public enableScreenCapture() {
     this.screenCapEnabled = true;
@@ -90,10 +98,13 @@ export class AppComponent {
   }
 
   public sendMessage(): void {
-    this.socketService.sendMessage({
-      name: this.name,
-      message: this.message,
-    });
+    if (this.message) {
+      this.socketService.sendMessage({
+        name: this.name,
+        message: this.message,
+      });
+    }
+    this.message = "";
   }
 
   private playStream(elRef: ElementRef, stream: any): void {

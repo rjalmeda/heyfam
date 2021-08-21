@@ -44,9 +44,8 @@ export class SocketServiceService {
     });
 
     this.socket.on("sendMessage", (message: IMessage) => {
-      console.log("message received");
       this.snackbar.open(
-        `${message.name}${message.name ? " : " : ""}${message.message}`,
+        `${message.name || "Anonymous"} : ${message.message}`,
         null,
         { duration: 2000 }
       );
@@ -60,8 +59,13 @@ export class SocketServiceService {
         connection.peerConnection =
           this.userVideoService.createPeerConnection();
 
+        const videoStreams = await navigator.mediaDevices.enumerateDevices();
+        const isVideoAvailable = videoStreams.some(
+          (d) => d.kind === "videoinput"
+        );
+
         const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: isVideoAvailable,
           audio: {
             echoCancellation: true,
           },
@@ -121,8 +125,13 @@ export class SocketServiceService {
       data = data.filter((session) => session.sessionId !== this.socket.id);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
+        const videoStreams = await navigator.mediaDevices.enumerateDevices();
+        const isVideoAvailable = videoStreams.some(
+          (d) => d.kind === "videoinput"
+        );
+
         const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: isVideoAvailable,
           audio: {
             echoCancellation: true,
           },

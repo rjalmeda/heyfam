@@ -50,8 +50,6 @@ io.on('connection', socket => {
     socket.broadcast.emit('newUserConnected', connection)
 
     socket.on('sendMessage',  (message) => {
-        console.log('message received');
-        console.log(message);
         socket.broadcast.emit('sendMessage', message)
     })
 
@@ -80,5 +78,4 @@ io.on('connection', socket => {
 
 http.listen(port, () => {
     console.log(`Now listening on port ${port}`)
-
 })

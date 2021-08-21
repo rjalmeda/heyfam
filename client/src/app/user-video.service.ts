@@ -8,8 +8,11 @@ export class UserVideoService {
   constructor() {}
 
   public async getFeed() {
+    const videoStreams = await navigator.mediaDevices.enumerateDevices();
+    const isVideoAvailable = videoStreams.some((d) => d.kind === "videoinput");
+
     return await navigator.mediaDevices.getUserMedia({
-      video: true,
+      video: isVideoAvailable,
       audio: {
         echoCancellation: true,
       },

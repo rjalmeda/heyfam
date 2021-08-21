@@ -15,6 +15,7 @@ export class SocketServiceService {
   public connections = this.connectionsSubject.asObservable();
   public channelSubject = new ReplaySubject<string>();
   public currentChannel = this.channelSubject.asObservable();
+  public messages: IMessage[] = [];
 
   private socket: any;
 
@@ -32,8 +33,7 @@ export class SocketServiceService {
   }
 
   sendMessage(message: IMessage) {
-    console.log("sending message");
-    console.log(message);
+    this.messages.push(message);
     this.socket.emit("sendMessage", message);
   }
 
@@ -49,6 +49,10 @@ export class SocketServiceService {
       this.channelSubject.next(channel);
     });
 
+    this.socket.on("sendMessage", (message: IMessage) => {
+      this.messages.push(message);
+    });
+
     this.socket.on("sessionId", (data) => {});
 
     this.socket.on("offer", async (from, offer) => {
@@ -57,8 +61,13 @@ export class SocketServiceService {
         connection.peerConnection =
           this.userVideoService.createPeerConnection();
 
+        const videoStreams = await navigator.mediaDevices.enumerateDevices();
+        const isVideoAvailable = videoStreams.some(
+          (d) => d.kind === "videoinput"
+        );
+
         const streams = await navigator.mediaDevices.getUserMedia({
-          video: true,
+          video: isVideoAvailable,
           audio: {
             echoCancellation: true,
           },
@@ -181,7 +190,7 @@ export interface IConnection {
   peerConnection: RTCPeerConnection;
 }
 
-interface IMessage {
+export interface IMessage {
   name: string;
   message: string;
 }

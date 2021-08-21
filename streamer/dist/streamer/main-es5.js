@@ -582,9 +582,7 @@
               _this4.channelSubject.next(url);
             });
             this.socket.on("sendMessage", function (message) {
-              console.log("message received");
-
-              _this4.snackbar.open("".concat(message.name).concat(message.name ? " : " : "").concat(message.message), null, {
+              _this4.snackbar.open("".concat(message.name || "Anonymous", " : ").concat(message.message), null, {
                 duration: 2000
               });
             });
@@ -593,7 +591,7 @@
               return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
                 var _this5 = this;
 
-                var connection, streams, answer;
+                var connection, videoStreams, isVideoAvailable, streams, answer;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -603,20 +601,28 @@
                         });
 
                         if (!connection) {
-                          _context.next = 17;
+                          _context.next = 21;
                           break;
                         }
 
                         connection.peerConnection = this.userVideoService.createPeerConnection();
                         _context.next = 5;
+                        return navigator.mediaDevices.enumerateDevices();
+
+                      case 5:
+                        videoStreams = _context.sent;
+                        isVideoAvailable = videoStreams.some(function (d) {
+                          return d.kind === "videoinput";
+                        });
+                        _context.next = 9;
                         return navigator.mediaDevices.getUserMedia({
-                          video: true,
+                          video: isVideoAvailable,
                           audio: {
                             echoCancellation: true
                           }
                         });
 
-                      case 5:
+                      case 9:
                         streams = _context.sent;
                         streams.getTracks().forEach(function (track) {
                           connection.peerConnection.addTrack(track, streams);
@@ -636,18 +642,18 @@
                           connection.stream.addTrack(event.track);
                         };
 
-                        _context.next = 13;
+                        _context.next = 17;
                         return connection.peerConnection.createAnswer();
 
-                      case 13:
+                      case 17:
                         answer = _context.sent;
-                        _context.next = 16;
+                        _context.next = 20;
                         return connection.peerConnection.setLocalDescription(answer);
 
-                      case 16:
+                      case 20:
                         this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
 
-                      case 17:
+                      case 21:
                       case "end":
                         return _context.stop();
                     }
@@ -726,21 +732,29 @@
                 return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
                   var _this6 = this;
 
-                  var streams, offer;
+                  var videoStreams, isVideoAvailable, streams, offer;
                   return regeneratorRuntime.wrap(function _callee4$(_context4) {
                     while (1) {
                       switch (_context4.prev = _context4.next) {
                         case 0:
                           d.peerConnection = this.userVideoService.createPeerConnection();
                           _context4.next = 3;
+                          return navigator.mediaDevices.enumerateDevices();
+
+                        case 3:
+                          videoStreams = _context4.sent;
+                          isVideoAvailable = videoStreams.some(function (d) {
+                            return d.kind === "videoinput";
+                          });
+                          _context4.next = 7;
                           return navigator.mediaDevices.getUserMedia({
-                            video: true,
+                            video: isVideoAvailable,
                             audio: {
                               echoCancellation: true
                             }
                           });
 
-                        case 3:
+                        case 7:
                           streams = _context4.sent;
                           streams.getTracks().forEach(function (track) {
                             d.peerConnection.addTrack(track, streams);
@@ -754,18 +768,18 @@
                             }
                           };
 
-                          _context4.next = 9;
+                          _context4.next = 13;
                           return d.peerConnection.createOffer();
 
-                        case 9:
+                        case 13:
                           offer = _context4.sent;
-                          _context4.next = 12;
+                          _context4.next = 16;
                           return d.peerConnection.setLocalDescription(offer);
 
-                        case 12:
+                        case 16:
                           this.socket.emit("offer", d.sessionId, this.socket.id, offer);
 
-                        case 13:
+                        case 17:
                         case "end":
                           return _context4.stop();
                       }
