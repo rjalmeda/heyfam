@@ -95,7 +95,7 @@ function checkUrl(url) {
         const u = url.split('?');
         const params = !!u[1] ? u[1].split('&') : [];
         const parentIdx = params.findIndex(p => p.includes('parent'));
-        let parent = process.env.ENVIRONMENT === 'heroku' ? 'parent=herokuapp.com' : 'parent=localhost';
+        let parent = process.env.ENVIRONMENT === 'heroku' ? 'parent=rj-stream-test.herokuapp.com' : 'parent=localhost';
         if (parentIdx > -1) {
             params.splice(parentIdx, 1, parent);
         } else {
