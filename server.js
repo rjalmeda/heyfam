@@ -4,15 +4,32 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const port = process.env.PORT || 4040;
 
-const connections = [];
-const clients = [];
-const streamers = [];
+const channels = {};
+const clients = {};
+const streamers = {};
 
-let currentChannel = 'https://www.youtube.com/embed/NAbQimfaRyw?autoplay=1';
+let defaultChannel = 'https://www.youtube.com/embed/NAbQimfaRyw?autoplay=1'; 
 
-app.use('/client', express.static("./client/dist/client"));
+const ioExpressMiddleware = (() => {
+    return {
+        socket: {},
+        express: (req, res, next) => {
 
-app.use(express.static("./streamer/dist/streamer"));
+            if (this.socket && this.socket.joinChannel) {
+                this.socket.joinChannel(req.params);
+            }
+            next();
+        },
+        io: (socket, next) => {
+            this.socket = socket;
+            next();
+        }
+    }
+})();
+
+app.use('/:room/client', ioExpressMiddleware.express, express.static("./client/dist/client"));
+
+app.use('/:room', ioExpressMiddleware.express, express.static("./streamer/dist/streamer"));
 
 // app.get('/', (req, res) => {
 //     res.send("hello");
@@ -24,29 +41,45 @@ io.on('connection', socket => {
         name: ''
     }
 
-    let currentList;
+    socket.joined = false;
 
-    socket.emit('currentChannel', currentChannel)
+    let currentList = [];
+
+    socket.joinChannel = ({room}) => {
+        if (!socket.joined) {
+            socket.join(room)
+            socket.room = room;
+            socket.joined = true;
+            streamers[room] = streamers[room] || [];
+            currentList = streamers[room];
+            currentList.push(connection);
+            socket.emit('channelJoined', '');
+            socket.emit('allStreamers', streamers[room]);
+        }
+        
+    }
+
+    channels[socket.room] = channels[socket.room] || defaultChannel;
+
+    socket.emit('currentChannel', channels[socket.room]);
 
     socket.on('updateChannel', channel => {
         channel = checkUrl(channel);
-        currentChannel = channel;
-        socket.broadcast.emit('currentChannel', currentChannel)
+        channels[socket.room] = channel;
+        socket.broadcast.emit('currentChannel', channels[socket.room])
     })
 
     socket.on('registerClient', () => {
-        currentList = clients;
-        clients.push(connection);
+        clients[socket.room] = clients[socket.room] || [];
+        currentList = clients[socket.room];
         socket.broadcast.emit("newClientConnected", connection);
     })
 
     socket.on('registerStreamer', () => {
-        currentList = streamers;
-        streamers.push(connection);
+        streamers[socket.room] = streamers[socket.room] || [];
+        currentList = streamers[socket.room];
         socket.broadcast.emit("newStreamerConnected", connection);
     })
-
-    connections.push(connection)
 
     socket.broadcast.emit('newUserConnected', connection)
 
@@ -55,9 +88,12 @@ io.on('connection', socket => {
     })
 
     socket.on('disconnect', () => {
+        currentList = streamers[socket.room] || [];
         const idx = currentList.findIndex(c => c.sessionId === socket.id);
         socket.broadcast.emit('userDisconnected', socket.id)
-        currentList.splice(idx, 1);
+        if (idx > -1) {
+            currentList.splice(idx, 1);
+        }
     })
 
     socket.on('offer', (to, from, offer) => {
@@ -72,9 +108,8 @@ io.on('connection', socket => {
         socket.broadcast.to(to).emit('iceCandidate', from, iceCandidate);
     })
 
-    socket.emit('allUsers', connections);
-    socket.emit('allStreamers', streamers);
-    socket.emit('allClients', clients);
+    // socket.emit('allStreamers', streamers);
+    // socket.emit('allClients', clients);
 })
 
 http.listen(port, () => {
@@ -95,7 +130,7 @@ function checkUrl(url) {
         const u = url.split('?');
         const params = !!u[1] ? u[1].split('&') : [];
         const parentIdx = params.findIndex(p => p.includes('parent'));
-        let parent = process.env.ENVIRONMENT === 'heroku' ? 'parent=herokuapp.com' : 'parent=localhost';
+        let parent = process.env.ENVIRONMENT === 'heroku' ? 'parent=rj-stream-test.herokuapp.com' : 'parent=localhost';
         if (parentIdx > -1) {
             params.splice(parentIdx, 1, parent);
         } else {
@@ -106,3 +141,5 @@ function checkUrl(url) {
 
     return url;
 }
+
+io.use(ioExpressMiddleware.io);

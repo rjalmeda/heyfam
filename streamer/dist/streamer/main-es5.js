@@ -586,34 +586,35 @@
         _createClass(SocketServiceService, [{
           key: "getSocket",
           value: function getSocket() {
-            var _this3 = this;
-
             this.socket = window["socketIo"]();
             this.socket.on("connect", function () {
-              _this3.socket.emit("registerStreamer", {});
+              console.log("socket.io connected");
             });
           }
         }, {
           key: "setupListeners",
           value: function setupListeners() {
-            var _this4 = this;
+            var _this3 = this;
 
+            this.socket.on("channelJoined", function () {
+              _this3.socket.emit("registerStreamer", {});
+            });
             this.socket.on("currentChannel", function (channel) {
               if (!!channel) {
-                channel = _this4.sanitizer.bypassSecurityTrustResourceUrl(channel);
+                channel = _this3.sanitizer.bypassSecurityTrustResourceUrl(channel);
               }
 
-              _this4.channelSubject.next(channel);
+              _this3.channelSubject.next(channel);
             });
             this.socket.on("sendMessage", function (message) {
-              _this4.snackbar.open("".concat(message.name || "Anonymous", " : ").concat(message.message), null, {
+              _this3.snackbar.open("".concat(message.name || "Anonymous", " : ").concat(message.message), null, {
                 duration: 2000
               });
             });
             this.socket.on("sessionId", function (data) {});
             this.socket.on("offer", function (from, offer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-                var _this5 = this;
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                var _this4 = this;
 
                 var connection, videoStreams, isVideoAvailable, streams, answer;
                 return regeneratorRuntime.wrap(function _callee$(_context) {
@@ -656,7 +657,7 @@
 
                         connection.peerConnection.onicecandidate = function (event) {
                           if (event.candidate) {
-                            _this5.socket.emit("iceCandidate", connection.sessionId, _this5.socket.id, event.candidate);
+                            _this4.socket.emit("iceCandidate", connection.sessionId, _this4.socket.id, event.candidate);
                           }
                         };
 
@@ -686,7 +687,7 @@
               }));
             });
             this.socket.on("answer", function (from, answer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
                 var connection, remoteDesc;
                 return regeneratorRuntime.wrap(function _callee2$(_context2) {
                   while (1) {
@@ -713,7 +714,7 @@
               }));
             });
             this.socket.on("iceCandidate", function (from, iceCandidate) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
                 var connection;
                 return regeneratorRuntime.wrap(function _callee3$(_context3) {
                   while (1) {
@@ -748,13 +749,13 @@
                 }, _callee3, this, [[2, 7]]);
               }));
             });
-            this.socket.on("allClients", function (data) {
+            this.socket.on("allStreamers", function (data) {
               data = data.filter(function (session) {
-                return session.sessionId !== _this4.socket.id;
+                return session.sessionId !== _this3.socket.id;
               });
               data.forEach(function (d) {
-                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-                  var _this6 = this;
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this3, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                  var _this5 = this;
 
                   var videoStreams, isVideoAvailable, streams, offer;
                   return regeneratorRuntime.wrap(function _callee4$(_context4) {
@@ -788,7 +789,7 @@
 
                           d.peerConnection.onicecandidate = function (event) {
                             if (event.candidate) {
-                              _this6.socket.emit("iceCandidate", d.sessionId, _this6.socket.id, event.candidate);
+                              _this5.socket.emit("iceCandidate", d.sessionId, _this5.socket.id, event.candidate);
                             }
                           };
 
@@ -811,31 +812,31 @@
                   }, _callee4, this);
                 }));
               });
-              _this4.allUsers = data;
+              _this3.allUsers = data;
 
-              _this4.allUsers.forEach(function (u) {
+              _this3.allUsers.forEach(function (u) {
                 u.stream = new MediaStream();
               });
 
-              _this4.connectionsSubject.next(data);
+              _this3.connectionsSubject.next(data);
             });
             this.socket.on("userDisconnected", function (sessionId) {
-              var idx = _this4.allUsers.findIndex(function (u) {
+              var idx = _this3.allUsers.findIndex(function (u) {
                 return u.sessionId === sessionId;
               });
 
               if (idx > -1) {
-                _this4.allUsers.splice(idx, 1);
+                _this3.allUsers.splice(idx, 1);
               }
 
-              _this4.connectionsSubject.next(_this4.allUsers);
+              _this3.connectionsSubject.next(_this3.allUsers);
             });
-            this.socket.on("newClientConnected", function (connection) {
+            this.socket.on("newStreamerConnected", function (connection) {
               connection.stream = new MediaStream();
 
-              _this4.allUsers.push(connection);
+              _this3.allUsers.push(connection);
 
-              _this4.connectionsSubject.next(_this4.allUsers);
+              _this3.connectionsSubject.next(_this3.allUsers);
             });
           }
         }]);
