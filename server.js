@@ -36,6 +36,14 @@ const ioExpressMiddleware = (() => {
     }
 })();
 
+app.get('/', (req, res) => {
+    res.redirect('/main');
+});
+
+app.get('/client', (req, res) => {
+    res.redirect('/main/client');
+})
+
 app.use('/:room/client', express.static("./client/dist/client"));
 
 app.use('/:room', ioExpressMiddleware.express, express.static("./streamer/dist/streamer"));
@@ -78,7 +86,6 @@ io.on('connection', socket => {
             currentList.push(connection);
             socket.emit('channelJoined', '');
             socket.emit('allStreamers', streamers[room]);
-            console.log(streamers);
         }
         
         channels[room] = channels[room] || defaultChannel;
