@@ -14,20 +14,29 @@ const ioExpressMiddleware = (() => {
     return {
         socket: {},
         express: (req, res, next) => {
-
-            if (this.socket && this.socket.joinChannel) {
-                this.socket.joinChannel(req.params);
+            if (this.socket && this.socket.joinChannelStreamer && !this.socket.isClient) {
+                this.socket.joinChannelStreamer(req.params);
             }
             next();
         },
         io: (socket, next) => {
+            
+
+            function getClient() {
+                let url = socket.handshake.headers.referer.split(socket.handshake.headers.host)[1];
+                return !!url.split('/')[2];
+            }
+
+            socket.isClient = getClient();
+
             this.socket = socket;
+
             next();
         }
     }
 })();
 
-app.use('/:room/client', ioExpressMiddleware.express, express.static("./client/dist/client"));
+app.use('/:room/client', express.static("./client/dist/client"));
 
 app.use('/:room', ioExpressMiddleware.express, express.static("./streamer/dist/streamer"));
 
@@ -45,52 +54,76 @@ io.on('connection', socket => {
 
     let currentList = [];
 
-    socket.joinChannel = ({room}) => {
+    function getRoom() {
+        let url = socket.handshake.headers.referer.split(socket.handshake.headers.host)[1];
+        return url.split('/')[1];
+    }
+
+
+    function checkJoined() {
+        if (!socket.joined) {
+            const room = getRoom();
+            socket.join(room)
+            socket.joined = true;
+        }
+    }
+
+    socket.joinChannelStreamer = () => {
+        const room = getRoom();
         if (!socket.joined) {
             socket.join(room)
-            socket.room = room;
             socket.joined = true;
             streamers[room] = streamers[room] || [];
             currentList = streamers[room];
             currentList.push(connection);
             socket.emit('channelJoined', '');
             socket.emit('allStreamers', streamers[room]);
+            console.log(streamers);
         }
         
+        channels[room] = channels[room] || defaultChannel;
     }
 
-    channels[socket.room] = channels[socket.room] || defaultChannel;
 
-    socket.emit('currentChannel', channels[socket.room]);
+    socket.emit('currentChannel', channels[getRoom()]);
 
     socket.on('updateChannel', channel => {
+        checkJoined();
         channel = checkUrl(channel);
-        channels[socket.room] = channel;
-        socket.broadcast.emit('currentChannel', channels[socket.room])
+        const room = getRoom();
+        channels[room] = channel;
+        socket.in(room).broadcast.emit('currentChannel', channels[room])
     })
 
     socket.on('registerClient', () => {
-        clients[socket.room] = clients[socket.room] || [];
-        currentList = clients[socket.room];
-        socket.broadcast.emit("newClientConnected", connection);
+        checkJoined();
+        // const room = getRoom();
+        // clients[room] = clients[room] || [];
+        // currentList = clients[room];
+        // socket.in(room).broadcast.emit("newClientConnected", connection);
     })
 
     socket.on('registerStreamer', () => {
-        streamers[socket.room] = streamers[socket.room] || [];
-        currentList = streamers[socket.room];
-        socket.broadcast.emit("newStreamerConnected", connection);
+        checkJoined();
+        const room = getRoom();
+        streamers[room] = streamers[room] || [];
+        currentList = streamers[room];
+        socket.in(room).broadcast.emit("newStreamerConnected", connection);
     })
 
-    socket.broadcast.emit('newUserConnected', connection)
+    // socket.broadcast.emit('newUserConnected', connection)
 
     socket.on('sendMessage',  (message) => {
-        socket.broadcast.emit('sendMessage', message)
+        checkJoined();
+        const room = getRoom();
+        socket.in(room).broadcast.emit('sendMessage', message)
     })
 
     socket.on('disconnect', () => {
-        currentList = streamers[socket.room] || [];
+        checkJoined();
+        const room = getRoom();
         const idx = currentList.findIndex(c => c.sessionId === socket.id);
-        socket.broadcast.emit('userDisconnected', socket.id)
+        socket.in(room).broadcast.emit('userDisconnected', socket.id)
         if (idx > -1) {
             currentList.splice(idx, 1);
         }
@@ -108,8 +141,6 @@ io.on('connection', socket => {
         socket.broadcast.to(to).emit('iceCandidate', from, iceCandidate);
     })
 
-    // socket.emit('allStreamers', streamers);
-    // socket.emit('allClients', clients);
 })
 
 http.listen(port, () => {

@@ -455,14 +455,12 @@ class SocketServiceService {
     }
     getSocket() {
         this.socket = window["socketIo"]();
-        this.socket.on("connect", () => {
-            this.socket.emit("registerClient", {});
-        });
+        this.socket.on("connect", () => { });
     }
     setupListeners() {
         this.socket.on("channelJoined", () => {
             console.log("channel joined");
-            this.socket.emit("registerClient", {});
+            // this.socket.emit("registerClient", {});
         });
         this.socket.on("currentChannel", (channel) => {
             this.channelSubject.next(channel);
