@@ -91,6 +91,10 @@ export class AppComponent implements OnInit {
     }
   }
 
+  public clearUrl(): void {
+    this.streamUrl = "";
+  }
+
   public updateStream(): void {
     if (confirm("Update Current Channel")) {
       this.socketService.updateChannel(this.streamUrl);
