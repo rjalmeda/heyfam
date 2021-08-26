@@ -320,10 +320,13 @@ class SocketServiceService {
     getSocket() {
         this.socket = window["socketIo"]();
         this.socket.on("connect", () => {
-            this.socket.emit("registerStreamer", {});
+            console.log("socket.io connected");
         });
     }
     setupListeners() {
+        this.socket.on("channelJoined", () => {
+            this.socket.emit("registerStreamer", {});
+        });
         this.socket.on("currentChannel", (channel) => {
             if (!!channel) {
                 channel = this.sanitizer.bypassSecurityTrustResourceUrl(channel);
@@ -384,7 +387,7 @@ class SocketServiceService {
                 }
             }
         }));
-        this.socket.on("allClients", (data) => {
+        this.socket.on("allStreamers", (data) => {
             data = data.filter((session) => session.sessionId !== this.socket.id);
             data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
                 d.peerConnection = this.userVideoService.createPeerConnection();
@@ -422,7 +425,7 @@ class SocketServiceService {
             }
             this.connectionsSubject.next(this.allUsers);
         });
-        this.socket.on("newClientConnected", (connection) => {
+        this.socket.on("newStreamerConnected", (connection) => {
             connection.stream = new MediaStream();
             this.allUsers.push(connection);
             this.connectionsSubject.next(this.allUsers);
@@ -467,7 +470,7 @@ AppRoutingModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineI
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["NgModule"],
         args: [{
                 imports: [_angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"].forRoot(routes)],
-                exports: [_angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"]]
+                exports: [_angular_router__WEBPACK_IMPORTED_MODULE_1__["RouterModule"]],
             }]
     }], null, null); })();
 

@@ -33,11 +33,15 @@ export class SocketServiceService {
   getSocket() {
     this.socket = window["socketIo"]();
     this.socket.on("connect", () => {
-      this.socket.emit("registerStreamer", {});
+      console.log("socket.io connected");
     });
   }
 
   setupListeners() {
+    this.socket.on("channelJoined", () => {
+      this.socket.emit("registerStreamer", {});
+    });
+
     this.socket.on("currentChannel", (channel) => {
       if (!!channel) {
         channel = this.sanitizer.bypassSecurityTrustResourceUrl(channel);
@@ -123,7 +127,7 @@ export class SocketServiceService {
       }
     });
 
-    this.socket.on("allClients", (data) => {
+    this.socket.on("allStreamers", (data) => {
       data = data.filter((session) => session.sessionId !== this.socket.id);
       data.forEach(async (d) => {
         d.peerConnection = this.userVideoService.createPeerConnection();
@@ -171,7 +175,7 @@ export class SocketServiceService {
       this.connectionsSubject.next(this.allUsers);
     });
 
-    this.socket.on("newClientConnected", (connection) => {
+    this.socket.on("newStreamerConnected", (connection) => {
       connection.stream = new MediaStream();
       this.allUsers.push(connection);
       this.connectionsSubject.next(this.allUsers);

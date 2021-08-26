@@ -809,6 +809,7 @@
           this.channelSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
           this.currentChannel = this.channelSubject.asObservable();
           this.messages = [];
+          this.camEnabled = false;
           this.getSocket();
           this.setupListeners();
         }
@@ -839,6 +840,11 @@
           value: function setupListeners() {
             var _this4 = this;
 
+            this.socket.on("channelJoined", function () {
+              console.log("channel joined");
+
+              _this4.socket.emit("registerClient", {});
+            });
             this.socket.on("currentChannel", function (channel) {
               _this4.channelSubject.next(channel);
             });
@@ -846,227 +852,230 @@
               _this4.messages.push(message);
             });
             this.socket.on("sessionId", function (data) {});
-            this.socket.on("offer", function (from, offer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-                var _this5 = this;
 
-                var connection, videoStreams, isVideoAvailable, streams, answer;
-                return regeneratorRuntime.wrap(function _callee2$(_context2) {
-                  while (1) {
-                    switch (_context2.prev = _context2.next) {
-                      case 0:
-                        connection = this.allUsers.find(function (u) {
-                          return u.sessionId === from;
-                        });
+            if (this.camEnabled) {
+              this.socket.on("offer", function (from, offer) {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                  var _this5 = this;
 
-                        if (!connection) {
-                          _context2.next = 21;
-                          break;
-                        }
-
-                        connection.peerConnection = this.userVideoService.createPeerConnection();
-                        _context2.next = 5;
-                        return navigator.mediaDevices.enumerateDevices();
-
-                      case 5:
-                        videoStreams = _context2.sent;
-                        isVideoAvailable = videoStreams.some(function (d) {
-                          return d.kind === "videoinput";
-                        });
-                        _context2.next = 9;
-                        return navigator.mediaDevices.getUserMedia({
-                          video: isVideoAvailable,
-                          audio: {
-                            echoCancellation: true
-                          }
-                        });
-
-                      case 9:
-                        streams = _context2.sent;
-                        streams.getTracks().forEach(function (track) {
-                          connection.peerConnection.addTrack(track, streams);
-                        });
-                        this.userVideoService.getFeed().then(function (f) {
-                          var tracks = f.getTracks();
-                          var senders = connection.peerConnection.getSenders();
-                          senders.forEach(function (s) {
-                            var track = tracks.find(function (t) {
-                              return t.kind === s.track.kind;
-                            });
-                            s.replaceTrack(track);
-                          });
-                        });
-
-                        connection.peerConnection.onconnectionstatechange = function (event) {};
-
-                        connection.peerConnection.onicecandidate = function (event) {
-                          if (event.candidate) {
-                            _this5.socket.emit("iceCandidate", connection.sessionId, _this5.socket.id, event.candidate);
-                          }
-                        };
-
-                        connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer)); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-                        //   connection.stream.addTrack(event.track);
-                        // };
-
-                        _context2.next = 17;
-                        return connection.peerConnection.createAnswer();
-
-                      case 17:
-                        answer = _context2.sent;
-                        _context2.next = 20;
-                        return connection.peerConnection.setLocalDescription(answer);
-
-                      case 20:
-                        this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
-
-                      case 21:
-                      case "end":
-                        return _context2.stop();
-                    }
-                  }
-                }, _callee2, this);
-              }));
-            });
-            this.socket.on("answer", function (from, answer) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-                var connection, remoteDesc;
-                return regeneratorRuntime.wrap(function _callee3$(_context3) {
-                  while (1) {
-                    switch (_context3.prev = _context3.next) {
-                      case 0:
-                        connection = this.allUsers.find(function (u) {
-                          return u.sessionId === from;
-                        });
-                        remoteDesc = new RTCSessionDescription(answer); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-                        //   connection.stream.addTrack(event.track);
-                        // };
-
-                        _context3.next = 4;
-                        return connection.peerConnection.setRemoteDescription(remoteDesc);
-
-                      case 4:
-                      case "end":
-                        return _context3.stop();
-                    }
-                  }
-                }, _callee3, this);
-              }));
-            });
-            this.socket.on("iceCandidate", function (from, iceCandidate) {
-              return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-                var connection;
-                return regeneratorRuntime.wrap(function _callee4$(_context4) {
-                  while (1) {
-                    switch (_context4.prev = _context4.next) {
-                      case 0:
-                        connection = this.allUsers.find(function (u) {
-                          return u.sessionId === from;
-                        });
-
-                        if (!iceCandidate) {
-                          _context4.next = 9;
-                          break;
-                        }
-
-                        _context4.prev = 2;
-                        _context4.next = 5;
-                        return connection.peerConnection.addIceCandidate(iceCandidate);
-
-                      case 5:
-                        _context4.next = 9;
-                        break;
-
-                      case 7:
-                        _context4.prev = 7;
-                        _context4.t0 = _context4["catch"](2);
-
-                      case 9:
-                      case "end":
-                        return _context4.stop();
-                    }
-                  }
-                }, _callee4, this, [[2, 7]]);
-              }));
-            });
-            this.socket.on("allStreamers", function (data) {
-              data = data.filter(function (session) {
-                return session.sessionId !== _this4.socket.id;
-              });
-              data.forEach(function (d) {
-                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
-                  var _this6 = this;
-
-                  var streams, offer;
-                  return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                  var connection, videoStreams, isVideoAvailable, streams, answer;
+                  return regeneratorRuntime.wrap(function _callee2$(_context2) {
                     while (1) {
-                      switch (_context5.prev = _context5.next) {
+                      switch (_context2.prev = _context2.next) {
                         case 0:
-                          d.peerConnection = this.userVideoService.createPeerConnection();
-                          _context5.next = 3;
+                          connection = this.allUsers.find(function (u) {
+                            return u.sessionId === from;
+                          });
+
+                          if (!connection) {
+                            _context2.next = 21;
+                            break;
+                          }
+
+                          connection.peerConnection = this.userVideoService.createPeerConnection();
+                          _context2.next = 5;
+                          return navigator.mediaDevices.enumerateDevices();
+
+                        case 5:
+                          videoStreams = _context2.sent;
+                          isVideoAvailable = videoStreams.some(function (d) {
+                            return d.kind === "videoinput";
+                          });
+                          _context2.next = 9;
                           return navigator.mediaDevices.getUserMedia({
-                            video: true,
+                            video: isVideoAvailable,
                             audio: {
                               echoCancellation: true
                             }
                           });
 
-                        case 3:
-                          streams = _context5.sent;
+                        case 9:
+                          streams = _context2.sent;
                           streams.getTracks().forEach(function (track) {
-                            d.peerConnection.addTrack(track, streams);
+                            connection.peerConnection.addTrack(track, streams);
+                          });
+                          this.userVideoService.getFeed().then(function (f) {
+                            var tracks = f.getTracks();
+                            var senders = connection.peerConnection.getSenders();
+                            senders.forEach(function (s) {
+                              var track = tracks.find(function (t) {
+                                return t.kind === s.track.kind;
+                              });
+                              s.replaceTrack(track);
+                            });
                           });
 
-                          d.peerConnection.onconnectionstatechange = function (event) {};
+                          connection.peerConnection.onconnectionstatechange = function (event) {};
 
-                          d.peerConnection.onicecandidate = function (event) {
+                          connection.peerConnection.onicecandidate = function (event) {
                             if (event.candidate) {
-                              _this6.socket.emit("iceCandidate", d.sessionId, _this6.socket.id, event.candidate);
+                              _this5.socket.emit("iceCandidate", connection.sessionId, _this5.socket.id, event.candidate);
                             }
                           };
 
-                          _context5.next = 9;
-                          return d.peerConnection.createOffer();
+                          connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer)); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                          //   connection.stream.addTrack(event.track);
+                          // };
 
-                        case 9:
-                          offer = _context5.sent;
-                          _context5.next = 12;
-                          return d.peerConnection.setLocalDescription(offer);
+                          _context2.next = 17;
+                          return connection.peerConnection.createAnswer();
 
-                        case 12:
-                          this.socket.emit("offer", d.sessionId, this.socket.id, offer);
+                        case 17:
+                          answer = _context2.sent;
+                          _context2.next = 20;
+                          return connection.peerConnection.setLocalDescription(answer);
 
-                        case 13:
+                        case 20:
+                          this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
+
+                        case 21:
                         case "end":
-                          return _context5.stop();
+                          return _context2.stop();
                       }
                     }
-                  }, _callee5, this);
+                  }, _callee2, this);
                 }));
               });
-              _this4.allUsers = data; // this.allUsers.forEach((u) => {
-              //   u.stream = new MediaStream();
-              // });
+              this.socket.on("answer", function (from, answer) {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+                  var connection, remoteDesc;
+                  return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          connection = this.allUsers.find(function (u) {
+                            return u.sessionId === from;
+                          });
+                          remoteDesc = new RTCSessionDescription(answer); // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                          //   connection.stream.addTrack(event.track);
+                          // };
 
-              _this4.connectionsSubject.next(data);
-            });
-            this.socket.on("userDisconnected", function (sessionId) {
-              var idx = _this4.allUsers.findIndex(function (u) {
-                return u.sessionId === sessionId;
+                          _context3.next = 4;
+                          return connection.peerConnection.setRemoteDescription(remoteDesc);
+
+                        case 4:
+                        case "end":
+                          return _context3.stop();
+                      }
+                    }
+                  }, _callee3, this);
+                }));
               });
+              this.socket.on("iceCandidate", function (from, iceCandidate) {
+                return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                  var connection;
+                  return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                      switch (_context4.prev = _context4.next) {
+                        case 0:
+                          connection = this.allUsers.find(function (u) {
+                            return u.sessionId === from;
+                          });
 
-              if (idx > -1) {
-                _this4.allUsers.splice(idx, 1);
-              }
+                          if (!iceCandidate) {
+                            _context4.next = 9;
+                            break;
+                          }
 
-              _this4.connectionsSubject.next(_this4.allUsers);
-            });
-            this.socket.on("newStreamerConnected", function (connection) {
-              // connection.stream = new MediaStream();
-              _this4.allUsers.push(connection);
+                          _context4.prev = 2;
+                          _context4.next = 5;
+                          return connection.peerConnection.addIceCandidate(iceCandidate);
 
-              _this4.connectionsSubject.next(_this4.allUsers);
-            });
+                        case 5:
+                          _context4.next = 9;
+                          break;
+
+                        case 7:
+                          _context4.prev = 7;
+                          _context4.t0 = _context4["catch"](2);
+
+                        case 9:
+                        case "end":
+                          return _context4.stop();
+                      }
+                    }
+                  }, _callee4, this, [[2, 7]]);
+                }));
+              });
+              this.socket.on("allStreamers", function (data) {
+                data = data.filter(function (session) {
+                  return session.sessionId !== _this4.socket.id;
+                });
+                data.forEach(function (d) {
+                  return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(_this4, void 0, void 0, /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+                    var _this6 = this;
+
+                    var streams, offer;
+                    return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                      while (1) {
+                        switch (_context5.prev = _context5.next) {
+                          case 0:
+                            d.peerConnection = this.userVideoService.createPeerConnection();
+                            _context5.next = 3;
+                            return navigator.mediaDevices.getUserMedia({
+                              video: true,
+                              audio: {
+                                echoCancellation: true
+                              }
+                            });
+
+                          case 3:
+                            streams = _context5.sent;
+                            streams.getTracks().forEach(function (track) {
+                              d.peerConnection.addTrack(track, streams);
+                            });
+
+                            d.peerConnection.onconnectionstatechange = function (event) {};
+
+                            d.peerConnection.onicecandidate = function (event) {
+                              if (event.candidate) {
+                                _this6.socket.emit("iceCandidate", d.sessionId, _this6.socket.id, event.candidate);
+                              }
+                            };
+
+                            _context5.next = 9;
+                            return d.peerConnection.createOffer();
+
+                          case 9:
+                            offer = _context5.sent;
+                            _context5.next = 12;
+                            return d.peerConnection.setLocalDescription(offer);
+
+                          case 12:
+                            this.socket.emit("offer", d.sessionId, this.socket.id, offer);
+
+                          case 13:
+                          case "end":
+                            return _context5.stop();
+                        }
+                      }
+                    }, _callee5, this);
+                  }));
+                });
+                _this4.allUsers = data; // this.allUsers.forEach((u) => {
+                //   u.stream = new MediaStream();
+                // });
+
+                _this4.connectionsSubject.next(data);
+              });
+              this.socket.on("newStreamerConnected", function (connection) {
+                // connection.stream = new MediaStream();
+                _this4.allUsers.push(connection);
+
+                _this4.connectionsSubject.next(_this4.allUsers);
+              });
+              this.socket.on("userDisconnected", function (sessionId) {
+                var idx = _this4.allUsers.findIndex(function (u) {
+                  return u.sessionId === sessionId;
+                });
+
+                if (idx > -1) {
+                  _this4.allUsers.splice(idx, 1);
+                }
+
+                _this4.connectionsSubject.next(_this4.allUsers);
+              });
+            }
           }
         }]);
 

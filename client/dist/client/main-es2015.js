@@ -429,6 +429,7 @@ class SocketServiceService {
         this.channelSubject = new rxjs__WEBPACK_IMPORTED_MODULE_2__["ReplaySubject"]();
         this.currentChannel = this.channelSubject.asObservable();
         this.messages = [];
+        this.camEnabled = false;
         this.getSocket();
         this.setupListeners();
     }
@@ -446,6 +447,10 @@ class SocketServiceService {
         });
     }
     setupListeners() {
+        this.socket.on("channelJoined", () => {
+            console.log("channel joined");
+            this.socket.emit("registerClient", {});
+        });
         this.socket.on("currentChannel", (channel) => {
             this.channelSubject.next(channel);
         });
@@ -453,105 +458,107 @@ class SocketServiceService {
             this.messages.push(message);
         });
         this.socket.on("sessionId", (data) => { });
-        this.socket.on("offer", (from, offer) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const connection = this.allUsers.find((u) => u.sessionId === from);
-            if (connection) {
-                connection.peerConnection =
-                    this.userVideoService.createPeerConnection();
-                const videoStreams = yield navigator.mediaDevices.enumerateDevices();
-                const isVideoAvailable = videoStreams.some((d) => d.kind === "videoinput");
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: isVideoAvailable,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    connection.peerConnection.addTrack(track, streams);
-                });
-                this.userVideoService.getFeed().then((f) => {
-                    const tracks = f.getTracks();
-                    const senders = connection.peerConnection.getSenders();
-                    senders.forEach((s) => {
-                        const track = tracks.find((t) => t.kind === s.track.kind);
-                        s.replaceTrack(track);
+        if (this.camEnabled) {
+            this.socket.on("offer", (from, offer) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                const connection = this.allUsers.find((u) => u.sessionId === from);
+                if (connection) {
+                    connection.peerConnection =
+                        this.userVideoService.createPeerConnection();
+                    const videoStreams = yield navigator.mediaDevices.enumerateDevices();
+                    const isVideoAvailable = videoStreams.some((d) => d.kind === "videoinput");
+                    const streams = yield navigator.mediaDevices.getUserMedia({
+                        video: isVideoAvailable,
+                        audio: {
+                            echoCancellation: true,
+                        },
                     });
-                });
-                connection.peerConnection.onconnectionstatechange = (event) => { };
-                connection.peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        this.socket.emit("iceCandidate", connection.sessionId, this.socket.id, event.candidate);
-                    }
-                };
-                connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    streams.getTracks().forEach((track) => {
+                        connection.peerConnection.addTrack(track, streams);
+                    });
+                    this.userVideoService.getFeed().then((f) => {
+                        const tracks = f.getTracks();
+                        const senders = connection.peerConnection.getSenders();
+                        senders.forEach((s) => {
+                            const track = tracks.find((t) => t.kind === s.track.kind);
+                            s.replaceTrack(track);
+                        });
+                    });
+                    connection.peerConnection.onconnectionstatechange = (event) => { };
+                    connection.peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            this.socket.emit("iceCandidate", connection.sessionId, this.socket.id, event.candidate);
+                        }
+                    };
+                    connection.peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+                    // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                    //   connection.stream.addTrack(event.track);
+                    // };
+                    const answer = yield connection.peerConnection.createAnswer();
+                    yield connection.peerConnection.setLocalDescription(answer);
+                    this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
+                }
+            }));
+            this.socket.on("answer", (from, answer) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                const connection = this.allUsers.find((u) => u.sessionId === from);
+                const remoteDesc = new RTCSessionDescription(answer);
                 // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
                 //   connection.stream.addTrack(event.track);
                 // };
-                const answer = yield connection.peerConnection.createAnswer();
-                yield connection.peerConnection.setLocalDescription(answer);
-                this.socket.emit("answer", connection.sessionId, this.socket.id, answer);
-            }
-        }));
-        this.socket.on("answer", (from, answer) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const connection = this.allUsers.find((u) => u.sessionId === from);
-            const remoteDesc = new RTCSessionDescription(answer);
-            // connection.peerConnection.ontrack = (event: RTCTrackEvent) => {
-            //   connection.stream.addTrack(event.track);
-            // };
-            yield connection.peerConnection.setRemoteDescription(remoteDesc);
-        }));
-        this.socket.on("iceCandidate", (from, iceCandidate) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            const connection = this.allUsers.find((u) => u.sessionId === from);
-            if (iceCandidate) {
-                try {
-                    yield connection.peerConnection.addIceCandidate(iceCandidate);
-                }
-                catch (e) {
-                    // ignore errors
-                }
-            }
-        }));
-        this.socket.on("allStreamers", (data) => {
-            data = data.filter((session) => session.sessionId !== this.socket.id);
-            data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-                d.peerConnection = this.userVideoService.createPeerConnection();
-                const streams = yield navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: {
-                        echoCancellation: true,
-                    },
-                });
-                streams.getTracks().forEach((track) => {
-                    d.peerConnection.addTrack(track, streams);
-                });
-                d.peerConnection.onconnectionstatechange = (event) => { };
-                d.peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        this.socket.emit("iceCandidate", d.sessionId, this.socket.id, event.candidate);
-                    }
-                };
-                const offer = yield d.peerConnection.createOffer();
-                yield d.peerConnection.setLocalDescription(offer);
-                this.socket.emit("offer", d.sessionId, this.socket.id, offer);
+                yield connection.peerConnection.setRemoteDescription(remoteDesc);
             }));
-            this.allUsers = data;
-            // this.allUsers.forEach((u) => {
-            //   u.stream = new MediaStream();
-            // });
-            this.connectionsSubject.next(data);
-        });
-        this.socket.on("userDisconnected", (sessionId) => {
-            const idx = this.allUsers.findIndex((u) => u.sessionId === sessionId);
-            if (idx > -1) {
-                this.allUsers.splice(idx, 1);
-            }
-            this.connectionsSubject.next(this.allUsers);
-        });
-        this.socket.on("newStreamerConnected", (connection) => {
-            // connection.stream = new MediaStream();
-            this.allUsers.push(connection);
-            this.connectionsSubject.next(this.allUsers);
-        });
+            this.socket.on("iceCandidate", (from, iceCandidate) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                const connection = this.allUsers.find((u) => u.sessionId === from);
+                if (iceCandidate) {
+                    try {
+                        yield connection.peerConnection.addIceCandidate(iceCandidate);
+                    }
+                    catch (e) {
+                        // ignore errors
+                    }
+                }
+            }));
+            this.socket.on("allStreamers", (data) => {
+                data = data.filter((session) => session.sessionId !== this.socket.id);
+                data.forEach((d) => Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
+                    d.peerConnection = this.userVideoService.createPeerConnection();
+                    const streams = yield navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: {
+                            echoCancellation: true,
+                        },
+                    });
+                    streams.getTracks().forEach((track) => {
+                        d.peerConnection.addTrack(track, streams);
+                    });
+                    d.peerConnection.onconnectionstatechange = (event) => { };
+                    d.peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            this.socket.emit("iceCandidate", d.sessionId, this.socket.id, event.candidate);
+                        }
+                    };
+                    const offer = yield d.peerConnection.createOffer();
+                    yield d.peerConnection.setLocalDescription(offer);
+                    this.socket.emit("offer", d.sessionId, this.socket.id, offer);
+                }));
+                this.allUsers = data;
+                // this.allUsers.forEach((u) => {
+                //   u.stream = new MediaStream();
+                // });
+                this.connectionsSubject.next(data);
+            });
+            this.socket.on("newStreamerConnected", (connection) => {
+                // connection.stream = new MediaStream();
+                this.allUsers.push(connection);
+                this.connectionsSubject.next(this.allUsers);
+            });
+            this.socket.on("userDisconnected", (sessionId) => {
+                const idx = this.allUsers.findIndex((u) => u.sessionId === sessionId);
+                if (idx > -1) {
+                    this.allUsers.splice(idx, 1);
+                }
+                this.connectionsSubject.next(this.allUsers);
+            });
+        }
     }
 }
 SocketServiceService.ɵfac = function SocketServiceService_Factory(t) { return new (t || SocketServiceService)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_user_video_service__WEBPACK_IMPORTED_MODULE_4__["UserVideoService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_platform_browser__WEBPACK_IMPORTED_MODULE_5__["DomSanitizer"])); };
