@@ -14,7 +14,7 @@ export class SocketServiceService {
   public allUsers: IConnection[];
   public connectionsSubject = new Subject<IConnection[]>();
   public connections = this.connectionsSubject.asObservable();
-
+  public messages: IMessage[] = [];
   public channelSubject = new ReplaySubject<SafeResourceUrl | string>();
   public currentChannel = this.channelSubject.asObservable();
 
@@ -50,6 +50,7 @@ export class SocketServiceService {
     });
 
     this.socket.on("sendMessage", (message: IMessage) => {
+      this.messages.push(message);
       this.snackbar.open(
         `${message.name || "Anonymous"} : ${message.message}`,
         null,
@@ -190,7 +191,7 @@ export interface IConnection {
   stream: MediaStream;
 }
 
-interface IMessage {
+export interface IMessage {
   name: string;
   message: string;
 }

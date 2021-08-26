@@ -29,12 +29,14 @@
 
     <br />
 
-    <div style="margin-top: 2em; height: 40vh; background: rgb(211, 211, 211)">
-      <ng-container *ngFor="let m of messages">
-        <span style="font-style: italic">{{ m.name || "anonymous" }}</span
-        ><span> : {{ m.message }}</span
-        ><br />
-      </ng-container>
+    <div class="chat-wrapper">
+      <div class="chat-box">
+        <ng-container *ngFor="let m of messages">
+          <span style="font-style: italic">{{ m.name || "anonymous" }}</span
+          ><span> : {{ m.message }}</span
+          ><br />
+        </ng-container>
+      </div>
     </div>
 
     <form (submit)="sendMessage()" style="margin-top: 2em">

@@ -18,4 +18,14 @@
     autoplay
     [id]="c.sessionId"
   ></video>
+
+  <div class="chat-wrapper">
+    <div class="chat-box">
+      <ng-container *ngFor="let m of messages">
+        <span style="font-style: italic">{{ m.name || "anonymous" }}</span
+        ><span> : {{ m.message }}</span
+        ><br />
+      </ng-container>
+    </div>
+  </div>
 </div>

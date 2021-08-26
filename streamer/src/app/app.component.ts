@@ -5,9 +5,14 @@ import {
   ElementRef,
   AfterViewChecked,
   SimpleChanges,
+  OnInit,
 } from "@angular/core";
 import { SafeResourceUrl } from "@angular/platform-browser";
-import { SocketServiceService, IConnection } from "./socket-service.service";
+import {
+  SocketServiceService,
+  IConnection,
+  IMessage,
+} from "./socket-service.service";
 import { UserVideoService } from "./user-video.service";
 
 @Component({
@@ -15,7 +20,7 @@ import { UserVideoService } from "./user-video.service";
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
 })
-export class AppComponent implements AfterViewChecked {
+export class AppComponent implements AfterViewChecked, OnInit {
   public connections: IConnection[] = [];
   public userCam: any;
   public screenCapEnabled = false;
@@ -23,6 +28,7 @@ export class AppComponent implements AfterViewChecked {
   public get channelEnabled() {
     return !!this.currentChannel;
   }
+  public messages: IMessage[] = [];
 
   // @ViewChild("userWindow", { static: false, read: ElementRef })
   // private userWindow: ElementRef;
@@ -41,6 +47,10 @@ export class AppComponent implements AfterViewChecked {
     this.socketService.currentChannel.subscribe((channel) => {
       this.currentChannel = channel;
     });
+  }
+
+  public ngOnInit() {
+    this.messages = this.socketService.messages;
   }
 
   public ngAfterViewChecked(): void {
