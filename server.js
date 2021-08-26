@@ -126,6 +126,9 @@ function checkUrl(url) {
         url = url.replace('watch?v=', 'embed/');
         const u = url.split('?');
         url = `${u[0]}?autoplay=1`
+
+    } else if (lowerUrl.includes('youtu.be')) {
+        url = lowerUrl.replace('https://youtu.be/', 'https://www.youtube.com/embed/');
     } else if (lowerUrl.includes('twitch')) {
         const u = url.split('?');
         const params = !!u[1] ? u[1].split('&') : [];
