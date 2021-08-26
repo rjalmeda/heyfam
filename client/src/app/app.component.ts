@@ -98,6 +98,13 @@ export class AppComponent implements OnInit {
   public updateStream(): void {
     if (confirm("Update Current Channel")) {
       this.socketService.updateChannel(this.streamUrl);
+
+      this.socketService.sendMessage({
+        name: "ROBO",
+        message: `${this.name || "Anonymous"} changed the video to ${
+          this.streamUrl
+        }`,
+      });
     }
   }
 

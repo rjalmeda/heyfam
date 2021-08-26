@@ -251,6 +251,10 @@
           value: function updateStream() {
             if (confirm("Update Current Channel")) {
               this.socketService.updateChannel(this.streamUrl);
+              this.socketService.sendMessage({
+                name: "ROBO",
+                message: "".concat(this.name || "Anonymous", " changed the video to ").concat(this.streamUrl)
+              });
             }
           }
         }, {
