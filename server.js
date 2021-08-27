@@ -81,6 +81,7 @@ io.on('connection', socket => {
         const room = getRoom();
         console.log(room);
         if (!socket.joined) {
+            console.log(socket.id + ' joining ' + room);
             socket.join(room)
             socket.joined = true;
             streamers[room] = streamers[room] || [];
