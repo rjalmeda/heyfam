@@ -71,6 +71,8 @@ io.on('connection', socket => {
 
 
     function checkJoined() {
+        const room = getRoom();
+        console.log(room);
         if (!socket.joined) {
             console.log(`${socket.id}: check joining ${room}`);
             const room = getRoom();
