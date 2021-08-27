@@ -14,8 +14,9 @@ const ioExpressMiddleware = (() => {
     return {
         socket: {},
         express: (req, res, next) => {
+            console.log(req.params);
             if (this.socket && this.socket.joinChannelStreamer && !this.socket.isClient) {
-                this.socket.joinChannelStreamer(req.params);
+                this.socket.joinChannelStreamer();
             }
             next();
         },
@@ -78,6 +79,7 @@ io.on('connection', socket => {
 
     socket.joinChannelStreamer = () => {
         const room = getRoom();
+        console.log(room);
         if (!socket.joined) {
             socket.join(room)
             socket.joined = true;
