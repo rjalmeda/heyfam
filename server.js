@@ -60,6 +60,7 @@ io.on('connection', socket => {
     }
 
     socket.joined = false;
+    socket.streamJoined = false;
 
     let currentList = [];
 
@@ -71,9 +72,17 @@ io.on('connection', socket => {
 
     function checkJoined() {
         if (!socket.joined) {
+            console.log(`${socket.id}: check joining ${room}`);
             const room = getRoom();
             socket.join(room)
             socket.joined = true;
+            if (!socket.isClient && !socket.streamJoined) {
+                currentList = streamers[room];
+                currentList.push(connection);
+                socket.emit('channelJoined', '');
+                socket.emit('allStreamers', streamers[room]);
+            }
+            socket.emit('channelJoined', '');
         }
     }
 
@@ -84,6 +93,7 @@ io.on('connection', socket => {
             console.log(socket.id + ' joining ' + room);
             socket.join(room)
             socket.joined = true;
+            socket.streamJoined = true;
             streamers[room] = streamers[room] || [];
             currentList = streamers[room];
             currentList.push(connection);
